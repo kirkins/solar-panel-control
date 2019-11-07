@@ -1,3 +1,6 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
 #define readVoltsGreen A0
 #define readVoltsYellow A1
 #define inverter A3
@@ -17,10 +20,40 @@
 #define bmsActiveSignal 3
 #define tempSensors 2
 
+OneWire oneWire(tempSensors);
+DallasTemperature sensors(&oneWire);
+
+DeviceAddress temp1, temp2, temp3;
+
 void setup() {
   Serial.begin(9600);
+  sensors.begin();
+
+  // locate devices on the bus
+  Serial.print("Found ");
+  Serial.print(sensors.getDeviceCount(), DEC);
+  Serial.println(" devices.");
+
+  // search for devices on the bus and assign based on an index.
+  if (!sensors.getAddress(temp1, 0)) Serial.println("Can't find temp1"); 
+  if (!sensors.getAddress(temp2, 1)) Serial.println("Can't find temp2"); 
+  if (!sensors.getAddress(temp3, 1)) Serial.println("Can't find temp3"); 
+
+  sensors.setHighAlarmTemp(insideThermometer, 25);
+
+}
+
+void checkAlarm(DeviceAddress deviceAddress)
+{
+  if (sensors.hasAlarm(deviceAddress))
+  {
+    Serial.print("ALARM: ");
+    printData(deviceAddress);
+  }
 }
 
 void loop() {
-
+  checkAlarm(temp1);
+  checkAlarm(temp2);
+  checkAlarm(temp3);
 }
