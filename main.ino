@@ -2,14 +2,14 @@
 #include <DallasTemperature.h>
 #include <PID_v1.h>
 
-#define readVoltsGreen A0
-#define readVoltsYellow A1
+#define readVoltsGreen A0 // if above 204 true
+#define readVoltsYellow A1 // if above 204 true
 #define inverter A3
 #define inverterFault A4
 #define batteryVoltage A5
 
-#define greenDrainGround 13
-#define yellowDrainGround 12
+#define greenDrainGround 13  // external LED
+#define yellowDrainGround 12 // external LED
 #define fanControl 11
 #define voltLoadDump 10 // 24 volts to water heating element
 #define lightingLoad 9 // 12 volt loads
@@ -65,26 +65,29 @@ void redLightStatus() {
   int batteryLevel = analogRead(batteryVoltage);
   Serial.print("Batter level = ");
   Serial.println(batteryLevel);
+}
 
-  // tests
-  digitalWrite(redLED, HIGH);
-  digitalWrite(blueLED, HIGH);
-  digitalWrite(greenLED, HIGH);
-  digitalWrite(voltLoadDump, HIGH);
-  digitalWrite(lightingLoad, HIGH);
-  digitalWrite(greenDrainGround, HIGH);
-  digitalWrite(yellowDrainGround, HIGH);
+void externalGreenLight() {
+  if(analogRead(readVoltsGreen) > 204) {
+    digitalWrite(greenDrainGround, HIGH);
+  } else {
+    digitalWrite(greenDrainGround, LOW);
+  }
+}
+
+void externalYellowLight() {
+  if(analogRead(readVoltsYellow) > 204) {
+    digitalWrite(yellowDrainGround, HIGH);
+  } else {
+    digitalWrite(yellowDrainGround, LOW);
+  }
 }
 
 void loop() {
   sensors.requestTemperatures();
-  Serial.print("temp 1 = ");
-  Serial.println(sensors.getTempCByIndex(0));
-  Serial.print("temp 2 = ");
-  Serial.println(sensors.getTempCByIndex(1));
-  Serial.print("temp 3 = ");
-  Serial.println(sensors.getTempCByIndex(2));
   controlFan();
   controlWaterHeat();
   redLightStatus();
+  externalGreenLight();
+  externalYellowLight();
 }
