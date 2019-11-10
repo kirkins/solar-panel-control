@@ -40,6 +40,7 @@ void setup() {
   sensors.begin();
   heatingPID.SetMode(AUTOMATIC);
   pinMode(fanControl, OUTPUT);
+  pinMode(voltLoadDump, OUTPUT);
 }
 
 void controlFan() {
