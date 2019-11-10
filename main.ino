@@ -1,5 +1,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <PID_v1.h>
 
 #define readVoltsGreen A0
 #define readVoltsYellow A1
@@ -21,15 +22,23 @@
 #define tempSensors 2
 
 float fanOnTemp       = 25.00;
+float waterOffTemp       = 80.00;
+double currentTemp, pidOutput, targetTemp;
+
+PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
 
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
+// temp1 = case
+// temp2 = battery
+// temp3 = water
 DeviceAddress temp1, temp2, temp3;
 
 void setup() {
   Serial.begin(9600);
   sensors.begin();
+  heatingPID.SetMode(AUTOMATIC);
 }
 
 void controlFan() {
@@ -37,6 +46,16 @@ void controlFan() {
     digitalWrite(fanControl,HIGH);
   } else {
     digitalWrite(fanControl, LOW);
+  }
+}
+
+void controlWaterHeat() {
+  heatingPID.SetOutputLimits(0, 255);
+  heatingPID.Compute();
+  if(sensors.getTempCByIndex(0) > waterOffTemp) {
+    digitalWrite(voltLoadDump,HIGH);
+  } else {
+    digitalWrite(voltLoadDump, LOW);
   }
 }
 
@@ -49,4 +68,5 @@ void loop() {
   Serial.print("temp 3 = ");
   Serial.println(sensors.getTempCByIndex(2));
   controlFan();
+  constrolWaterHeat();
 }
