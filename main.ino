@@ -11,8 +11,8 @@
 #define greenDrainGround 13
 #define yellowDrainGround 12
 #define fanControl 11
-#define voltLoadDump 10
-#define voltLoads 9
+#define voltLoadDump 10 // 24 volts to water heating element
+#define lightingLoad 9 // 12 volt loads
 
 #define greenLED 7
 #define blueLED 6
@@ -65,6 +65,15 @@ void redLightStatus() {
   int batteryLevel = analogRead(batteryVoltage);
   Serial.print("Batter level = ");
   Serial.println(batteryLevel);
+
+  // tests
+  digitalWrite(redLED, HIGH);
+  digitalWrite(blueLED, HIGH);
+  digitalWrite(greenLED, HIGH);
+  digitalWrite(voltLoadDump, HIGH);
+  digitalWrite(lightingLoad, HIGH);
+  digitalWrite(greenDrainGround, HIGH);
+  digitalWrite(yellowDrainGround, HIGH);
 }
 
 void loop() {
