@@ -2,25 +2,26 @@
 #include <DallasTemperature.h>
 #include <PID_v1.h>
 
+//INPUTS
 #define readVoltsGreen A0 // if above 1V true (read as 204)
 #define readVoltsYellow A1 // if above 1V true (read as 204)
-#define batteryVoltage A2 // check
-#define inverter A3
-#define inverterFault A4
+#define batteryVoltage A2 // check voltage directly from battery
 #define inverterButton A5 // if above 2v being push (208, but will check for 204)
+#define bmsActiveSignal 3  // will read TRUE when BMS active
+#define tempSensors 2 // serial digital inputs
 
+//OUTPUTS
+#define inverter A3  //sends 5v continuously
+#define inverterFault A4  //sends 5v continuously
 #define greenDrainGround 13  // external LED
 #define yellowDrainGround 12 // external LED
 #define fanControl 11
 #define voltLoadDump 10 // 24 volts to water heating element
 #define lightingLoad 9 // 12 volt loads
-
 #define greenLED 7
 #define blueLED 6
 #define redLED 5
 #define inverterSwitch 4
-#define bmsActiveSignal 3
-#define tempSensors 2
 
 float fanOnTemp       = 32.00;
 float waterOffTemp       = 80.00;
