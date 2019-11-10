@@ -5,8 +5,8 @@
 //INPUTS
 #define readVoltsGreen A0 // if above 1V true (read as 204)
 #define readVoltsYellow A1 // if above 1V true (read as 204)
-#define batteryVoltage A2 // check voltage directly from battery
-#define inverterButton A5 // if above 2v being push (208, but will check for 204)
+#define batteryLevel A2 // check voltage directly from battery
+#define inverterButton A5 // if above 1v being pushed
 #define bmsActiveSignal 3  // will read TRUE when BMS active
 #define tempSensors 2 // serial digital inputs
 
@@ -23,6 +23,8 @@
 #define redLED 5
 #define inverterSwitch 4
 
+bool inverterOn = true;
+bool batteryState = 0;
 float fanOnTemp       = 32.00;
 float waterOffTemp       = 80.00;
 double currentTemp, pidOutput, targetTemp;
@@ -69,13 +71,13 @@ void controlWaterHeat() {
 }
 
 void redLightStatus() {
-  int batteryLevel = analogRead(batteryVoltage);
+  int batteryLevel = analogRead(batteryLevel);
   Serial.print("Batter level = ");
   Serial.println(batteryLevel);
 }
 
 void externalGreenLight() {
-  if(analogRead(readVoltsGreen) > 204) {
+  if(analogRead(readVoltsGreen) > 204.00) {
     digitalWrite(greenDrainGround, HIGH);
   } else {
     digitalWrite(greenDrainGround, LOW);
@@ -83,7 +85,7 @@ void externalGreenLight() {
 }
 
 void externalYellowLight() {
-  if(analogRead(readVoltsYellow) > 204) {
+  if(analogRead(readVoltsYellow) > 204.00) {
     digitalWrite(yellowDrainGround, HIGH);
   } else {
     digitalWrite(yellowDrainGround, LOW);
@@ -91,17 +93,46 @@ void externalYellowLight() {
 }
 
 void checkButton() {
-  if(analogRead(inverterButton) > 204) {
+  if(analogRead(inverterButton) > 204.00) {
     digitalWrite(inverterSwitch, HIGH);
   } else {
     digitalWrite(inverterSwitch, LOW);
   }
 }
 
-void loop() {
+void turnOffInverter() {
+  // turn off inverter if BMS not True
+  // turn off inverter if battLevel Low
+  // Turn off inverter if fault for 5 seconds
+  // Turn on inverter if inverter is off and battlevel goes from Low to Normal
+  if(digitalRead(bmsActiveSignal) || batteryLevel < 2) {
+    inverterOn = false;
+  }
+}
 
-  analogWrite(inverter, 255);
-  analogWrite(inverterFault, 255);
+void setBatteryState() {
+  double batteryLevel = 5*(analogRead(batteryLevel)/1023)
+  if(batteryLevel < 2.6) {
+    batteryState = 0; // battErrorLOW
+  } else if(batteryLevel < 2.9) {
+    batteryState = 1; // battLOW
+  } else if(batteryLevel < 3.5) {
+    batteryState = 2; // battNORMAL
+  } else if(batteryLevel <3.65) {
+    batteryState = 3; // battHIGH
+  } else if(batteryLevel > 3.65) {
+    batteryState = 4; // battErrorHIGH
+  }
+}
+
+void loop() {
+  if(inverterOn) {
+    analogWrite(inverter, 255);
+    analogWrite(inverterFault, 255);
+  } else {
+    analogWrite(inverter, 0);
+    analogWrite(inverterFault, 0);
+  }
 
   sensors.requestTemperatures();
   controlFan();
