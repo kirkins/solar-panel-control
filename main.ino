@@ -68,5 +68,5 @@ void loop() {
   Serial.print("temp 3 = ");
   Serial.println(sensors.getTempCByIndex(2));
   controlFan();
-  constrolWaterHeat();
+  controlWaterHeat();
 }
