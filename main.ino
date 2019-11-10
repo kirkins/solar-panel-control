@@ -39,6 +39,7 @@ void setup() {
   Serial.begin(9600);
   sensors.begin();
   heatingPID.SetMode(AUTOMATIC);
+  pinMode(fanControl, OUTPUT);
 }
 
 void controlFan() {
