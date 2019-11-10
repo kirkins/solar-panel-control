@@ -41,6 +41,11 @@ void setup() {
   heatingPID.SetMode(AUTOMATIC);
   pinMode(fanControl, OUTPUT);
   pinMode(voltLoadDump, OUTPUT);
+  pinMode(greenDrainGround, OUTPUT);
+  pinMode(yellowDrainGround, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(blueLED, OUTPUT);
+  pinMode(redLED, OUTPUT);
 }
 
 void controlFan() {
@@ -84,6 +89,10 @@ void externalYellowLight() {
 }
 
 void loop() {
+
+  analogWrite(inverter, 255);
+  analogWrite(inverterFault, 255);
+
   sensors.requestTemperatures();
   controlFan();
   controlWaterHeat();
