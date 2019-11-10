@@ -61,6 +61,12 @@ void controlWaterHeat() {
   }
 }
 
+void redLightStatus() {
+  int batteryLevel = analogRead(batteryVoltage);
+  Serial.print("Batter level = ");
+  Serial.println(batteryLevel);
+}
+
 void loop() {
   sensors.requestTemperatures();
   Serial.print("temp 1 = ");
