@@ -30,9 +30,9 @@ PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
-// temp1 = case
-// temp2 = battery
-// temp3 = water
+// temp1 = water
+// temp2 = case
+// temp3 = battery
 DeviceAddress temp1, temp2, temp3;
 
 void setup() {
@@ -43,7 +43,7 @@ void setup() {
 }
 
 void controlFan() {
-  if(sensors.getTempCByIndex(0) > fanOnTemp || sensors.getTempCByIndex(1) > fanOnTemp) {
+  if(sensors.getTempCByIndex(1) > fanOnTemp || sensors.getTempCByIndex(2) > fanOnTemp) {
     digitalWrite(fanControl,HIGH);
   } else {
     digitalWrite(fanControl, LOW);
