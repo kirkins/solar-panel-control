@@ -21,7 +21,7 @@
 #define bmsActiveSignal 3
 #define tempSensors 2
 
-float fanOnTemp       = 25.00;
+float fanOnTemp       = 32.00;
 float waterOffTemp       = 80.00;
 double currentTemp, pidOutput, targetTemp;
 
@@ -77,4 +77,5 @@ void loop() {
   Serial.println(sensors.getTempCByIndex(2));
   controlFan();
   controlWaterHeat();
+  redLightStatus();
 }
