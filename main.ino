@@ -20,7 +20,7 @@
 #define bmsActiveSignal 3
 #define tempSensors 2
 
-int fanOnTemp       = 25;
+float fanOnTemp       = 25.00;
 
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
@@ -42,6 +42,11 @@ void controlFan() {
 
 void loop() {
   sensors.requestTemperatures();
-  Serial.print(sensors.getTempCByIndex(0));
-  //controlFan();
+  Serial.print("temp 1 = ");
+  Serial.println(sensors.getTempCByIndex(0));
+  Serial.print("temp 2 = ");
+  Serial.println(sensors.getTempCByIndex(1));
+  Serial.print("temp 3 = ");
+  Serial.println(sensors.getTempCByIndex(2));
+  controlFan();
 }
