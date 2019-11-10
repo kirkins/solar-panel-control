@@ -2,11 +2,12 @@
 #include <DallasTemperature.h>
 #include <PID_v1.h>
 
-#define readVoltsGreen A0 // if above 204 true
-#define readVoltsYellow A1 // if above 204 true
+#define readVoltsGreen A0 // if above 1V true (read as 204)
+#define readVoltsYellow A1 // if above 1V true (read as 204)
+#define batteryVoltage A2 // check
 #define inverter A3
 #define inverterFault A4
-#define batteryVoltage A5
+#define inverterButton A5 // if above 2v being push (208, but will check for 204)
 
 #define greenDrainGround 13  // external LED
 #define yellowDrainGround 12 // external LED
@@ -85,6 +86,14 @@ void externalYellowLight() {
     digitalWrite(yellowDrainGround, HIGH);
   } else {
     digitalWrite(yellowDrainGround, LOW);
+  }
+}
+
+void checkButton() {
+  if(analogRead(inverterButton) > 204) {
+    digitalWrite(inverterSwitch, HIGH);
+  } else {
+    digitalWrite(inverterSwitch, LOW);
   }
 }
 
