@@ -54,9 +54,9 @@ void controlWaterHeat() {
   heatingPID.SetOutputLimits(0, 255);
   heatingPID.Compute();
   if(sensors.getTempCByIndex(0) > waterOffTemp) {
-    digitalWrite(voltLoadDump,HIGH);
+    digitalWrite(voltLoadDump,LOW);
   } else {
-    digitalWrite(voltLoadDump, LOW);
+    digitalWrite(voltLoadDump, HIGH);
   }
 }
 
