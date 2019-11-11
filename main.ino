@@ -1,6 +1,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <PID_v1.h>
+#include <Countimer.h>
 
 //INPUTS
 #define readVoltsGreen A0 // if above 1V true (read as 204)
@@ -11,8 +12,8 @@
 #define tempSensors 2 // serial digital inputs
 
 //OUTPUTS
-#define inverter A3  //sends 5v continuously
-#define inverterFault A4  //sends 5v continuously
+#define voltOut1 A3  //sends 5v continuously
+#define voltOut2 A4  //sends 5v continuously
 #define greenDrainGround 13  // external LED
 #define yellowDrainGround 12 // external LED
 #define fanControl 11
@@ -23,11 +24,15 @@
 #define redLED 5
 #define inverterSwitch 4
 
-bool inverterOn = true;
-bool batteryState = 0;
+Countimer timer;
+
+bool batteryState = 3;
 float fanOnTemp       = 32.00;
 float waterOffTemp       = 80.00;
 double currentTemp, pidOutput, targetTemp;
+bool inverterTimerLock = false;
+bool inverterTimerBlock = false;
+bool inverterChanging = false;
 
 PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
 
@@ -50,6 +55,7 @@ void setup() {
   pinMode(greenLED, OUTPUT);
   pinMode(blueLED, OUTPUT);
   pinMode(redLED, OUTPUT);
+  pinMode(inverterSwitch, OUTPUT);
 }
 
 void controlFan() {
@@ -68,12 +74,6 @@ void controlWaterHeat() {
   } else {
     digitalWrite(voltLoadDump, HIGH);
   }
-}
-
-void redLightStatus() {
-  int batteryLevel = analogRead(batteryLevel);
-  Serial.print("Batter level = ");
-  Serial.println(batteryLevel);
 }
 
 void externalGreenLight() {
@@ -105,39 +105,59 @@ void turnOffInverter() {
   // turn off inverter if battLevel Low
   // Turn off inverter if fault for 5 seconds
   // Turn on inverter if inverter is off and battlevel goes from Low to Normal
-  if(digitalRead(bmsActiveSignal) || batteryLevel < 2) {
-    inverterOn = false;
+  if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
+    if(!inverterTimerLock) {
+      inverterTimerLock = true;
+      timer.setCounter(0, 0, 3, timer.COUNT_DOWN, confirmInverterShutdown);
+    }
+  } else if(inverterTimerLock) {
+    inverterTimerBlock = true;
   }
 }
 
+void confirmInverterShutdown() {
+  if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
+    if(!inverterTimerBlock && analogRead(readVoltsGreen) > 204) {
+      inverterChanging = true;
+      timer.setCounter(0, 0, 2, timer.COUNT_DOWN, stopInverterChanging);
+    }
+  }
+  inverterTimerBlock = false;
+  inverterTimerLock = false;
+}
+
 void setBatteryState() {
-  double batteryLevel = 5*(analogRead(batteryLevel)/1023)
-  if(batteryLevel < 2.6) {
+  double batteryVoltage = 5*(analogRead(batteryLevel)/1023)
+  if(batteryVoltage < 2.6) {
     batteryState = 0; // battErrorLOW
-  } else if(batteryLevel < 2.9) {
+  } else if(batteryVoltage < 2.9) {
     batteryState = 1; // battLOW
-  } else if(batteryLevel < 3.5) {
+  } else if(batteryVoltage < 3.5) {
     batteryState = 2; // battNORMAL
-  } else if(batteryLevel <3.65) {
+  } else if(batteryVoltage <3.65) {
     batteryState = 3; // battHIGH
-  } else if(batteryLevel > 3.65) {
+  } else if(batteryVoltage > 3.65) {
     batteryState = 4; // battErrorHIGH
   }
 }
 
-void loop() {
-  if(inverterOn) {
-    analogWrite(inverter, 255);
-    analogWrite(inverterFault, 255);
-  } else {
-    analogWrite(inverter, 0);
-    analogWrite(inverterFault, 0);
+void changeInverterState() {
+  if(inverterChanging) {
+    digitalWrite(inverterSwitch, HIGH);
   }
+}
 
+void stopInverterChanging() {
+  inverterChanging = false;
+}
+
+void loop() {
   sensors.requestTemperatures();
+  setBatteryState();
+  turnOffInverter(); // only if needed
   controlFan();
   controlWaterHeat();
-  redLightStatus();
   externalGreenLight();
   externalYellowLight();
+  changeInverterState();
 }
