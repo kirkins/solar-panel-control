@@ -30,9 +30,13 @@ bool batteryState = 3;
 float fanOnTemp       = 32.00;
 float waterOffTemp       = 80.00;
 double currentTemp, pidOutput, targetTemp;
+
 bool inverterTimerLock = false;
 bool inverterTimerBlock = false;
 bool inverterChanging = false;
+
+bool inverterFaultLock = false;
+bool inverterFaultTimerBlock = false;
 
 PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
 
@@ -108,14 +112,21 @@ void turnOffInverter() {
   if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
     if(!inverterTimerLock) {
       inverterTimerLock = true;
-      timer.setCounter(0, 0, 3, timer.COUNT_DOWN, confirmInverterShutdown);
+      timer.setCounter(0, 0, 3, timer.COUNT_DOWN, confirmLowBatteryOrBMS);
     }
   } else if(inverterTimerLock) {
     inverterTimerBlock = true;
   }
+
+  if(analogRead(readVoltsYellow) < 204) {
+      inverterFaultTimerLock = true;
+      timer.setCounter(0, 0, 5, timer.COUNT_DOWN, confirmInverterFault);
+  } else if(inverterFaultTimerBlock) {
+    inverterFaultTimerBlock = true;
+  }
 }
 
-void confirmInverterShutdown() {
+void confirmLowBatteryOrBMS() {
   if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
     if(!inverterTimerBlock && analogRead(readVoltsGreen) > 204) {
       inverterChanging = true;
@@ -124,6 +135,15 @@ void confirmInverterShutdown() {
   }
   inverterTimerBlock = false;
   inverterTimerLock = false;
+}
+
+void confirmInverterFault() {
+  if(analogRead(readVoltsYellow) < 204) {
+    if(!inverterFaultTimerBlock && analogRead(readVoltsGreen) > 204) {
+      inverterChanging = true;
+      timer.setCounter(0, 0, 2, timer.COUNT_DOWN, stopInverterChanging);
+    }
+  }
 }
 
 void setBatteryState() {
