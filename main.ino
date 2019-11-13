@@ -147,7 +147,7 @@ void confirmInverterFault() {
 }
 
 void setBatteryState() {
-  double batteryVoltage = 5*(analogRead(batteryLevel)/1023)
+  double batteryVoltage = 5*(analogRead(batteryLevel)/1023);
   if(batteryVoltage < 2.6) {
     batteryState = 0; // battErrorLOW
   } else if(batteryVoltage < 2.9) {
