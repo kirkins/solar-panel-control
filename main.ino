@@ -35,7 +35,7 @@ bool inverterTimerLock = false;
 bool inverterTimerBlock = false;
 bool inverterChanging = false;
 
-bool inverterFaultLock = false;
+bool inverterFaultTimerLock = false;
 bool inverterFaultTimerBlock = false;
 
 PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
