@@ -69,16 +69,16 @@ void controlFan() {
     digitalWrite(fanControl, LOW);
   }
   // Debug messages
-  Serial.print("Temp Sensor #1");
+  Serial.print("Temp Sensor #1    ");
   Serial.println(sensors.getTempCByIndex(1));
-  Serial.print("Temp Sensor #2");
+  Serial.print("Temp Sensor #2    ");
   Serial.println(sensors.getTempCByIndex(2));
 }
 
 void controlWaterHeat() {
   heatingPID.SetOutputLimits(0, 255);
   heatingPID.Compute();
-  Serial.print("Temp Sensor #0");
+  Serial.print("Temp Sensor #0    ");
   Serial.println(sensors.getTempCByIndex(0));
   if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState != 3) {
     digitalWrite(voltLoadDump,LOW);
@@ -156,6 +156,8 @@ void confirmInverterFault() {
 
 void setBatteryState() {
   double batteryVoltage = 5*(analogRead(batteryLevel)/1023);
+  Serial.print("Battery Voltage:    ");
+  Serial.println(batteryVoltage);
   if(batteryVoltage < 2.6) {
     batteryState = 0; // battErrorLOW
   } else if(batteryVoltage < 2.9) {
