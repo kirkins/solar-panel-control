@@ -38,8 +38,6 @@ bool inverterChanging = false;
 bool inverterFaultTimerLock = false;
 bool inverterFaultTimerBlock = false;
 
-bool debugOn = true;
-
 PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
 
 OneWire oneWire(tempSensors);
@@ -64,12 +62,6 @@ void setup() {
   pinMode(inverterSwitch, OUTPUT);
 }
 
-void debug(msg) {
-  if(debugOn) {
-    Serial.println(msg);
-  }
-}
-
 void controlFan() {
   if(sensors.getTempCByIndex(1) > fanOnTemp || sensors.getTempCByIndex(2) > fanOnTemp) {
     digitalWrite(fanControl,HIGH);
@@ -77,10 +69,10 @@ void controlFan() {
     digitalWrite(fanControl, LOW);
   }
   // Debug messages
-  debug("Temp Sensor #1");
-  debug(sensors.getTempCByIndex(1));
-  debug("Temp Sensor #2");
-  debug(sensors.getTempCByIndex(2));
+  Serial.println("Temp Sensor #1");
+  Serial.print(sensors.getTempCByIndex(1));
+  Serial.println("Temp Sensor #2");
+  Serial.print(sensors.getTempCByIndex(2));
 }
 
 void controlWaterHeat() {
