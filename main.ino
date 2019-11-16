@@ -78,11 +78,11 @@ void controlFan() {
 void controlWaterHeat() {
   heatingPID.SetOutputLimits(0, 255);
   heatingPID.Compute();
-  if(sensors.getTempCByIndex(0) > waterOffTemp) {
+  if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState != 3) {
     digitalWrite(voltLoadDump,LOW);
   } else {
     digitalWrite(voltLoadDump, HIGH);
-    analogWrite(blueLED, 255);
+    analogWrite(blueLED, 153);
   }
 }
 
