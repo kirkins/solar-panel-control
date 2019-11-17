@@ -186,6 +186,16 @@ void stopInverterChanging() {
   inverterChanging = false;
 }
 
+void redLightState() {
+  if(batteryState == 0 || batteryState == 4) {
+    digitalWrite(redLED, HIGH);
+    digitalWrite(greenLED, LOW);
+  } else {
+    digitalWrite(redLED, LOW);
+    digitalWrite(greenLED, HIGH);
+  }
+}
+
 void loop() {
   sensors.requestTemperatures();
   setBatteryState();
@@ -195,4 +205,5 @@ void loop() {
   externalGreenLight();
   externalYellowLight();
   changeInverterState();
+  redLightState();
 }
