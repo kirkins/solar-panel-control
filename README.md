@@ -8,6 +8,8 @@ Date: Nov. 2, 2019
 
 ![Box Setup](imgs/box.jpg)
 
+![Plugs](imgs/plugs.jpg)
+
 ## Arduino Requirements:
 The MPPT Charge Controller(from now on just CC), is used to charge the batteries with the energy from the panels.  Some models of CC have a feature that allows extra energy to be diverted to a dump load when the batteries reach full charge.  This CC does not have this feature, and one goal of the project is to achieve a similar function using the Arduino.  To achieve this the voltage of the battery is probed and sent to one of the analog input pins of the arduino(after being sent through a simple voltage divider circuit to reduce voltage).  Transistors and MOSFETS are used to switch loads on and off.  The loads controlled are: 24V load dump, 12V load, 12V cooling fans, 120V ac inverter.  The inverter is switched on and off using a 3 second pulse.  3 LEDs(Green, Blue, and Red), are used to indicate the status of the arduino.  A BMS(battery management system), is used to keep the cells of the battery balanced, as well as to act as a control signal when voltage is low or high.  The settings on the BMS will low me to send a control signal to the arduino when the voltage is low.  If this happens I can cut loads from the battery.  There is a redundant ability for the arduino to also detect the battery voltage directly and cut loads when voltage is low.  The reason for detecting the battery voltage with the arduino is in order to detect full charge of the batteries and use this as an indication when to activate the 24V load dump.  
 
