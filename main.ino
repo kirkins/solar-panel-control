@@ -43,6 +43,8 @@ bool inverterChanging = false;
 bool inverterFaultTimerLock = false;
 bool inverterFaultTimerBlock = false;
 
+bool blinkHistory[6];
+
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
@@ -67,7 +69,7 @@ void setup() {
   analogWrite(voltOut1, 1023);
   analogWrite(voltOut2, 1023);
 
-  redLightTimer.setCounter(controlRedBlinking, 500);
+  redLightTimer.setInterval(controlRedBlinking, 500);
 }
 
 void controlFan() {
@@ -232,13 +234,28 @@ void getErrorState(){
 }
 
 void controlRedBlinking() {
+  bool redOn;
+  bool greenOn = true;
+
   if(errorState==0) {
-    digitalWrite(greenLED, HIGH);
-    digitalWrite(redLED, LOW);
+    redOn=false;
+    greenOn=true;
   } else if(errorState==1) {
+    redOn=true;
+  }
+
+  if(redOn) {
     digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
+  } else if(greenOn) {
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(redLED, LOW);
   }
+
+  for (int i = 0; i < 5; i++){
+    blinkHistory[i+1]=blinkHistory[i];
+  }
+  blinkHistory[0] = redOn;
 }
 
 void printTests(){
@@ -271,6 +288,11 @@ void printTests(){
   // Error State
   Serial.print("Error State:  ");
   Serial.println(errorState);
+
+  // Blink History
+  Serial.print("Blink History:  ");
+  for (int i = 0; i < 6; i++) Serial.print(blinkHistory[i], HEX);
+  Serial.println();
 
   //tempSensors //  2
   //tempSensors prints in controlFan function//
