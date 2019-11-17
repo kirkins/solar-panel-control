@@ -70,6 +70,7 @@ void setup() {
   analogWrite(voltOut2, 1023);
 
   redLightTimer.setInterval(controlRedBlinking, 500);
+  digitalWrite(greenLED, HIGH);
 }
 
 void controlFan() {
@@ -135,6 +136,8 @@ void turnOffInverter() {
       timer.setCounter(0, 0, 3, timer.COUNT_DOWN, confirmLowBatteryOrBMS);
     }
   } else if(inverterTimerLock) {
+    Serial.print("CANCELLING TURN OF INVERTER");
+    Serial.println();
     inverterTimerBlock = true;
   }
 
@@ -238,6 +241,9 @@ void getErrorState(){
 void controlRedBlinking() {
   bool redOn;
   bool greenOn = true;
+
+  Serial.print("light blink loop running");
+  Serial.println();
 
   if(errorState==0) {
     redOn=false;
