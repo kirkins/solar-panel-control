@@ -179,27 +179,25 @@ void stopInverterChanging() {
   inverterChanging = false;
 }
 
-void controlRedLED(){
-  if(batteryState < 1 || batteryState > 3){
-    digitalWrite(redLED, HIGH);
-  } else {
-    digitalWrite(redLED, LOW);
-  }
-}
-
-void controlGreenLED(){
-  if(0 < batteryState < 4) {
-    digitalWrite(greenLED, HIGH);
-  } else {
-    digitalWrite(greenLED, LOW);
-  }
-}
-
 void controlLightingLoad(){
   if(batteryState < 2) {
     digitalWrite(lightingLoad, LOW);
   } else {
     digitalWrite(lightingLoad, HIGH);
+  }
+}
+
+void getLightState(){
+  if(0 < batteryState < 4
+      || sensors.getTempCByIndex(2) < 0
+      || sensors.getTempCByIndex(2) > 40
+      || sensors.getTempCByIndex(1) > 45
+      || sensors.getTempCByIndex(0) < 2) {
+    digitalWrite(greenLED, LOW);
+    digitalWrite(redLED, HIGH);
+  } else {
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(redLED, LOW);
   }
 }
 
@@ -212,8 +210,7 @@ void loop() {
   externalGreenLight();
   externalYellowLight();
   changeInverterState();
-  controlRedLED();
-  controlGreenLED();
+  getLightState();
   controlLightingLoad();
   checkButton();
 }
