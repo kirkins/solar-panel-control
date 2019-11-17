@@ -69,17 +69,20 @@ void controlFan() {
     digitalWrite(fanControl, LOW);
   }
   // Debug messages
-  Serial.print("Temp Sensor #1    ");
-  Serial.println(sensors.getTempCByIndex(1));
-  Serial.print("Temp Sensor #2    ");
-  Serial.println(sensors.getTempCByIndex(2));
+Serial.print("Water Temp Sensor: "); 
+Serial.println(sensors.getTempCByIndex(0));
+Serial.print("Case Temp Sensor: ");
+Serial.println(sensors.getTempCByIndex(1));
+Serial.print("Batt Temp Sensor: ");
+Serial.println(sensors.getTempCByIndex(2));
+
+
+Can you put like this so it's easier to read
 }
 
 void controlWaterHeat() {
   heatingPID.SetOutputLimits(0, 255);
   heatingPID.Compute();
-  Serial.print("Temp Sensor #0    ");
-  Serial.println(sensors.getTempCByIndex(0));
   if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState < 3) {
     digitalWrite(voltLoadDump,LOW);
     digitalWrite(blueLED, LOW);
