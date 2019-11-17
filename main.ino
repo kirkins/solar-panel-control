@@ -162,14 +162,14 @@ void setBatteryState() {
   Serial.println(batteryVoltage);
   if(batteryVoltage < 2.6) {
     batteryState = 0; // battErrorLOW
-  } else if(batteryVoltage < 2.9) {
-    batteryState = 1; // battLOW
-  } else if(batteryVoltage < 3.5) {
-    batteryState = 2; // battNORMAL
-  } else if(batteryVoltage <3.65) {
-    batteryState = 3; // battHIGH
   } else if(batteryVoltage > 3.65) {
     batteryState = 4; // battErrorHIGH
+  } else if(batteryVoltage > 3.5) {
+    batteryState = 3; // battHIGH
+  } else if(batteryVoltage > 2.9) {
+    batteryState = 2; // battNORMAL
+  } else {
+    batteryState = 1; // battLOW
   }
   Serial.print("Battery State:    ");
   Serial.println(batteryState);
