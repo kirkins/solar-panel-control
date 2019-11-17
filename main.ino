@@ -80,7 +80,7 @@ void controlWaterHeat() {
   heatingPID.Compute();
   Serial.print("Temp Sensor #0    ");
   Serial.println(sensors.getTempCByIndex(0));
-  if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState != 3) {
+  if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState < 3) {
     digitalWrite(voltLoadDump,LOW);
   } else {
     digitalWrite(voltLoadDump, HIGH);
