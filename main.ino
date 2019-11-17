@@ -84,7 +84,7 @@ void controlWaterHeat() {
     digitalWrite(voltLoadDump,LOW);
   } else {
     digitalWrite(voltLoadDump, HIGH);
-    analogWrite(blueLED, 153);
+    analogWrite(blueLED, 50);
   }
 }
 
