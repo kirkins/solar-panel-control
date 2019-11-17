@@ -1,6 +1,5 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include <PID_v1.h>
 #include <Countimer.h>
 
 //INPUTS
@@ -27,7 +26,7 @@
 Countimer timer;
 
 int batteryState = 3;
-float fanOnTemp       = 32.00;
+float fanOnTemp       = 28.00;
 float waterOffTemp       = 80.00;
 double currentTemp, pidOutput, targetTemp;
 
@@ -68,17 +67,15 @@ void controlFan() {
     digitalWrite(fanControl, LOW);
   }
   // Debug messages
-  Serial.print("Temp Sensor #1    ");
+  Serial.print("Water Temp Sensor: "); 
+  Serial.println(sensors.getTempCByIndex(0));
+  Serial.print("Case Temp Sensor: ");
   Serial.println(sensors.getTempCByIndex(1));
-  Serial.print("Temp Sensor #2    ");
+  Serial.print("Batt Temp Sensor: ");
   Serial.println(sensors.getTempCByIndex(2));
 }
 
 void controlWaterHeat() {
-  heatingPID.SetOutputLimits(0, 255);
-  heatingPID.Compute();
-  Serial.print("Temp Sensor #0    ");
-  Serial.println(sensors.getTempCByIndex(0));
   if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState < 3) {
     digitalWrite(voltLoadDump,LOW);
     digitalWrite(blueLED, LOW);
@@ -162,14 +159,14 @@ void setBatteryState() {
   Serial.println(batteryVoltage);
   if(batteryVoltage < 2.6) {
     batteryState = 0; // battErrorLOW
-  } else if(batteryVoltage > 3.65) {
-    batteryState = 4; // battErrorHIGH
-  } else if(batteryVoltage > 3.5) {
-    batteryState = 3; // battHIGH
-  } else if(batteryVoltage > 2.9) {
-    batteryState = 2; // battNORMAL
-  } else {
+  } else if(batteryVoltage <2.9) {
     batteryState = 1; // battLOW
+  } else if(batteryVoltage < 3.5) {
+    batteryState = 2; // battNORMAL
+  } else if(batteryVoltage < 3.65) {
+    batteryState = 3; // battHIGH
+  } else {
+    batteryState = 4; // battErrorHIGH
   }
   Serial.print("Battery State:    ");
   Serial.println(batteryState);
@@ -201,6 +198,14 @@ void controlGreenLED(){
   }
 }
 
+void controlLightingLoad(){
+  if(batteryState < 2) {
+    digitalWrite(lightingLoad, LOW);
+  } else {
+    digitalWrite(lightingLoad, HIGH);
+  }
+}
+
 void loop() {
   sensors.requestTemperatures();
   setBatteryState();
@@ -212,4 +217,6 @@ void loop() {
   changeInverterState();
   controlRedLED();
   controlGreenLED();
+  controlLightingLoad();
+  checkButton();
 }
