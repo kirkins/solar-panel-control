@@ -171,6 +171,8 @@ void setBatteryState() {
   } else if(batteryVoltage > 3.65) {
     batteryState = 4; // battErrorHIGH
   }
+  Serial.print("Battery State:    ");
+  Serial.println(batteryState);
 }
 
 void changeInverterState() {
