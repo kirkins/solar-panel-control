@@ -80,7 +80,7 @@ void controlWaterHeat() {
   heatingPID.Compute();
   Serial.print("Temp Sensor #0    ");
   Serial.println(sensors.getTempCByIndex(0));
-  if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState != 3) {
+  if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState < 3) {
     digitalWrite(voltLoadDump,LOW);
   } else {
     digitalWrite(voltLoadDump, HIGH);
@@ -155,7 +155,7 @@ void confirmInverterFault() {
 }
 
 void setBatteryState() {
-  double batteryVoltage = 5*(double analogRead(batteryLevel)/1023.00);
+  double batteryVoltage = (5*(analogRead(batteryLevel)/1023.00))*1.016;
   Serial.print("Battery Level:    ");
   Serial.println(analogRead(batteryLevel));
   Serial.print("Battery Voltage:    ");
@@ -171,6 +171,8 @@ void setBatteryState() {
   } else {
     batteryState = 1; // battLOW
   }
+  Serial.print("Battery State:    ");
+  Serial.println(batteryState);
 }
 
 void changeInverterState() {
