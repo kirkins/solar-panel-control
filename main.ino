@@ -28,10 +28,10 @@ Countimer timer;
 int batteryState = 3;
 float fanOnTemp       = 28.00;
 float waterOffTemp       = 80.00;
-double safeBatteryLow = 0.00;
-double safeBatteryHigh = 40.00;
-double safeCaseHigh = 45.00;
-double safeWaterLow = 2.00;
+double safeBatteryTempLow = 0.00;
+double safeBatteryTempHigh = 40.00;
+double safeCaseTempHigh = 45.00;
+double safeWaterTempLow = 2.00;
 double currentTemp, targetTemp;
 
 int errorState = 0;
@@ -205,18 +205,26 @@ void getErrorState(){
   // 1 - Battery too cold
   // 2 - Battery or case too hot
   // 3 - Water too low
-  if(0 < batteryState < 4
-      || sensors.getTempCByIndex(2) < safeBatteryLow
-      || sensors.getTempCByIndex(2) > safeBatteryHigh
-      || sensors.getTempCByIndex(1) > safeCaseHigh
-      || sensors.getTempCByIndex(0) < safeWaterLow) {
-    digitalWrite(greenLED, LOW);
-    digitalWrite(redLED, HIGH);
+  // 4 - Battery out of range
+
+  if(sensors.getTempCByIndex(2) < safeBatteryTempLow) {
     errorState = 1;
+  } else if(sensors.getTempCByIndex(2) > safeBatteryTempHigh || sensors.getTempCByIndex(1) > safeCaseTempHigh) {
+    errorState = 2;
+  } else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
+    errorState = 3;
+  } else if(0 < batteryState < 4) {
+    errorState = 4;
   } else {
+    errorState = 0;
+  }
+
+  if(errorState==0) {
     digitalWrite(greenLED, HIGH);
     digitalWrite(redLED, LOW);
-    errorState = 0;
+  } else {
+    digitalWrite(greenLED, LOW);
+    digitalWrite(redLED, HIGH);
   }
 }
 
@@ -246,6 +254,10 @@ void printTests(){
   //true when BMS is OK
   Serial.print("bmsActiveSignal:  ");
   Serial.println(digitalRead(bmsActiveSignal));
+
+  // Error State
+  Serial.print("Error State:  ");
+  Serial.println(errorState);
 
   //tempSensors //  2
   //tempSensors prints in controlFan function//
