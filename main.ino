@@ -93,7 +93,7 @@ void controlWaterHeat() {
 }
 
 void externalGreenLight() {
-  if(analogRead(readVoltsGreen) > 204.00) {
+  if(analogRead(readVoltsGreen) < 204.00) {
     digitalWrite(greenDrainGround, HIGH);
   } else {
     digitalWrite(greenDrainGround, LOW);
@@ -101,7 +101,7 @@ void externalGreenLight() {
 }
 
 void externalYellowLight() {
-  if(analogRead(readVoltsYellow) > 204.00) {
+  if(analogRead(readVoltsYellow) < 204.00) {
     digitalWrite(yellowDrainGround, HIGH);
   } else {
     digitalWrite(yellowDrainGround, LOW);
