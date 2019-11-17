@@ -28,7 +28,7 @@ Countimer timer;
 int batteryState = 3;
 float fanOnTemp       = 28.00;
 float waterOffTemp       = 80.00;
-double currentTemp, pidOutput, targetTemp;
+double currentTemp, targetTemp;
 
 bool inverterTimerLock = false;
 bool inverterTimerBlock = false;
@@ -36,8 +36,6 @@ bool inverterChanging = false;
 
 bool inverterFaultTimerLock = false;
 bool inverterFaultTimerBlock = false;
-
-PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
 
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
@@ -49,7 +47,6 @@ DallasTemperature sensors(&oneWire);
 void setup() {
   Serial.begin(9600);
   sensors.begin();
-  heatingPID.SetMode(AUTOMATIC);
   pinMode(fanControl, OUTPUT);
   pinMode(voltLoadDump, OUTPUT);
   pinMode(greenDrainGround, OUTPUT);
