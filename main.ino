@@ -215,4 +215,5 @@ void loop() {
   changeInverterState();
   redLightState();
   controlLightingLoad();
+  checkButton();
 }
