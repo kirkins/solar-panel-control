@@ -34,6 +34,7 @@ double safeCaseHigh = 45.00;
 double safeWaterLow = 2.00;
 double currentTemp, targetTemp;
 
+bool errorState = false;
 bool inverterTimerLock = false;
 bool inverterTimerBlock = false;
 bool inverterChanging = false;
@@ -133,7 +134,7 @@ void turnOffInverter() {
 }
 
 void confirmLowBatteryOrBMS() {
-  if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
+  if(!digitalRead(bmsActiveSignal) || batteryState < 2 || errorState) {
     if(!inverterTimerBlock && analogRead(readVoltsGreen) > 204) {
       inverterChanging = true;
       timer.setCounter(0, 0, 2, timer.COUNT_DOWN, stopInverterChanging);
@@ -191,7 +192,7 @@ void controlLightingLoad(){
   }
 }
 
-void getLightState(){
+void getErrorState(){
   if(0 < batteryState < 4
       || sensors.getTempCByIndex(2) < safeBatteryLow
       || sensors.getTempCByIndex(2) > safeBatteryHigh
@@ -199,22 +200,24 @@ void getLightState(){
       || sensors.getTempCByIndex(0) < safeWaterLow) {
     digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
+    errorState = true;
   } else {
     digitalWrite(greenLED, HIGH);
     digitalWrite(redLED, LOW);
+    errorState = false;
   }
 }
 
 void loop() {
   sensors.requestTemperatures();
   setBatteryState();
+  getErrorState();
   turnOffInverter(); // only if needed
   controlFan();
   controlWaterHeat();
   externalGreenLight();
   externalYellowLight();
   changeInverterState();
-  getLightState();
   controlLightingLoad();
   checkButton();
 }
