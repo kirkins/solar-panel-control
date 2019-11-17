@@ -27,7 +27,7 @@
 Countimer timer;
 
 int batteryState = 3;
-float fanOnTemp       = 32.00;
+float fanOnTemp       = 28.00;
 float waterOffTemp       = 80.00;
 double currentTemp, pidOutput, targetTemp;
 
@@ -196,6 +196,14 @@ void redLightState() {
   }
 }
 
+void controlLightingLoad(){
+  if(batteryState < 2) {
+    digitalWrite(lightingLoad, LOW);
+  } else {
+    digitalWrite(lightingLoad, HIGH);
+  }
+}
+
 void loop() {
   sensors.requestTemperatures();
   setBatteryState();
@@ -206,4 +214,5 @@ void loop() {
   externalYellowLight();
   changeInverterState();
   redLightState();
+  controlLightingLoad();
 }
