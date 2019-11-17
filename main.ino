@@ -155,7 +155,9 @@ void confirmInverterFault() {
 }
 
 void setBatteryState() {
-  double batteryVoltage = 5*(analogRead(batteryLevel)/1023);
+  double batteryVoltage = 5*(double analogRead(batteryLevel)/1023);
+  Serial.print("Battery Level:    ");
+  Serial.println(analogRead(batteryLevel));
   Serial.print("Battery Voltage:    ");
   Serial.println(batteryVoltage);
   if(batteryVoltage < 2.6) {
