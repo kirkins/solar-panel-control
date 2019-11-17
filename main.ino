@@ -213,6 +213,37 @@ void getErrorState(){
   }
 }
 
+void printTests(){
+
+  //INPUTS//
+
+  //readVoltsGreen  //  A0
+  //inverter is off when above 1V
+  Serial.print("readVoltsGreen:  ");
+  Serial.println(5.00*(readVoltsGreen/1023.00));
+
+  //readVoltsYellow  // A1
+  //inverter is in FAULT when below 1V
+  Serial.print("readVoltsYellow:  ");
+  Serial.println(5.00*(readVoltsYellow/1023.00));
+
+  //batteryLevel  //  A2
+  //Battery Voltage prints in setBatteryState function//
+
+  //inverterButton // A5
+  //button is being pushed when above 1V
+  Serial.print("inverterButton:  ");
+  Serial.println(5.00*(inverterButton/1023.00));
+
+  //bmsActiveSignal //  3
+  //true when BMS is OK
+  Serial.print("bmsActiveSignal:  ");
+  Serial.println(bmsActiveSignal);
+
+  //tempSensors //  2
+  //tempSensors prints in controlFan function//
+}
+
 void loop() {
   sensors.requestTemperatures();
   setBatteryState();
@@ -225,4 +256,5 @@ void loop() {
   changeInverterState();
   controlLightingLoad();
   checkButton();
+  printTests();
 }
