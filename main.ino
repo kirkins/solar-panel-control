@@ -28,6 +28,10 @@ Countimer timer;
 int batteryState = 3;
 float fanOnTemp       = 28.00;
 float waterOffTemp       = 80.00;
+double safeBatteryLow = 0.00;
+double safeBatteryHigh = 40.00;
+double safeCaseHigh = 45.00;
+double safeWaterLow = 2.00;
 double currentTemp, targetTemp;
 
 bool inverterTimerLock = false;
@@ -189,10 +193,10 @@ void controlLightingLoad(){
 
 void getLightState(){
   if(0 < batteryState < 4
-      || sensors.getTempCByIndex(2) < 0
-      || sensors.getTempCByIndex(2) > 40
-      || sensors.getTempCByIndex(1) > 45
-      || sensors.getTempCByIndex(0) < 2) {
+      || sensors.getTempCByIndex(2) < safeBatteryLow
+      || sensors.getTempCByIndex(2) > safeBatteryHigh
+      || sensors.getTempCByIndex(1) > safeCaseHigh
+      || sensors.getTempCByIndex(0) < safeWaterLow) {
     digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
   } else {
