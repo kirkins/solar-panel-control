@@ -60,6 +60,11 @@ void setup() {
   pinMode(blueLED, OUTPUT);
   pinMode(redLED, OUTPUT);
   pinMode(inverterSwitch, OUTPUT);
+  pinMode(voltOut1, OUTPUT);
+  pinMode(voltOut2, OUTPUT);
+
+  analogWrite(voltOut1, 1023);
+  analogWrite(voltOut2, 1023);
 }
 
 void controlFan() {
