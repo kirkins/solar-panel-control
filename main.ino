@@ -43,10 +43,9 @@ PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
-// temp1 = water
-// temp2 = case
-// temp3 = battery
-DeviceAddress temp1, temp2, temp3;
+// 0 = water
+// 1 = case
+// 2 = battery
 
 void setup() {
   Serial.begin(9600);
@@ -186,13 +185,19 @@ void stopInverterChanging() {
   inverterChanging = false;
 }
 
-void redLightState() {
-  if(batteryState == 0 || batteryState == 4) {
+void controlRedLED(){
+  if(batteryState < 1 || batteryState > 3){
     digitalWrite(redLED, HIGH);
-    digitalWrite(greenLED, LOW);
   } else {
     digitalWrite(redLED, LOW);
+  }
+}
+
+void controlGreenLED(){
+  if(0 < batteryState < 4) {
     digitalWrite(greenLED, HIGH);
+  } else {
+    digitalWrite(greenLED, LOW);
   }
 }
 
@@ -205,5 +210,6 @@ void loop() {
   externalGreenLight();
   externalYellowLight();
   changeInverterState();
-  redLightState();
+  controlRedLED();
+  controlGreenLED();
 }
