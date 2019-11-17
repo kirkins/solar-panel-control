@@ -1,6 +1,5 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include <PID_v1.h>
 #include <Countimer.h>
 
 //INPUTS
@@ -43,11 +42,6 @@ PID heatingPID(&currentTemp, &pidOutput, &targetTemp, 0.5, 7, 1, DIRECT);
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
-// temp1 = water
-// temp2 = case
-// temp3 = battery
-DeviceAddress temp1, temp2, temp3;
-
 void setup() {
   Serial.begin(9600);
   sensors.begin();
@@ -81,8 +75,6 @@ Can you put like this so it's easier to read
 }
 
 void controlWaterHeat() {
-  heatingPID.SetOutputLimits(0, 255);
-  heatingPID.Compute();
   if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState < 3) {
     digitalWrite(voltLoadDump,LOW);
     digitalWrite(blueLED, LOW);
