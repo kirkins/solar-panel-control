@@ -26,7 +26,7 @@
 
 Countimer timer;
 
-bool batteryState = 3;
+int batteryState = 3;
 float fanOnTemp       = 32.00;
 float waterOffTemp       = 80.00;
 double currentTemp, pidOutput, targetTemp;
