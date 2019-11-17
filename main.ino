@@ -205,7 +205,8 @@ void getErrorState(){
   // 1 - Battery too cold
   // 2 - Battery or case too hot
   // 3 - Water too low
-  // 4 - Battery out of range
+  // 4 - Battery low error
+  // 5 - Battery high error
 
   if(sensors.getTempCByIndex(2) < safeBatteryTempLow) {
     errorState = 1;
@@ -213,8 +214,10 @@ void getErrorState(){
     errorState = 2;
   } else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
     errorState = 3;
-  } else if(0 < batteryState < 4) {
+  } else if(batteryState == 0) {
     errorState = 4;
+  } else if(batteryState == 4) {
+    errorState = 5;
   } else {
     errorState = 0;
   }
