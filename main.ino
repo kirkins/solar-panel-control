@@ -24,6 +24,7 @@
 #define inverterSwitch 4
 
 Countimer timer;
+Countimer redLightTimer;
 
 int batteryState = 3;
 float fanOnTemp       = 28.00;
@@ -65,6 +66,8 @@ void setup() {
 
   analogWrite(voltOut1, 1023);
   analogWrite(voltOut2, 1023);
+
+  redLightTimer.setCounter(controlRedBlinking, 500);
 }
 
 void controlFan() {
@@ -120,8 +123,9 @@ void turnOffInverter() {
   // turn off inverter if BMS not True
   // turn off inverter if battLevel Low
   // Turn off inverter if fault for 5 seconds
+  // Turn off inverter if error state is greater than 2 (meaning not cold water or cold battery error)
   // Turn on inverter if inverter is off and battlevel goes from Low to Normal
-  if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
+  if(!digitalRead(bmsActiveSignal) || batteryState < 2 || errorState > 2) {
     if(!inverterTimerLock) {
       inverterTimerLock = true;
       timer.setCounter(0, 0, 3, timer.COUNT_DOWN, confirmLowBatteryOrBMS);
@@ -206,16 +210,16 @@ void getErrorState(){
   // Error Types:
   // 0 - No error
   // 1 - Battery too cold
-  // 2 - Battery or case too hot
-  // 3 - Water too low
+  // 2 - Water too cold
+  // 3 - Battery or case too hot
   // 4 - Battery low error
   // 5 - Battery high error
 
   if(sensors.getTempCByIndex(2) < safeBatteryTempLow) {
     errorState = 1;
-  } else if(sensors.getTempCByIndex(2) > safeBatteryTempHigh || sensors.getTempCByIndex(1) > safeCaseTempHigh) {
-    errorState = 2;
   } else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
+    errorState = 2;
+  } else if(sensors.getTempCByIndex(2) > safeBatteryTempHigh || sensors.getTempCByIndex(1) > safeCaseTempHigh) {
     errorState = 3;
   } else if(batteryState == 0) {
     errorState = 4;
@@ -225,10 +229,13 @@ void getErrorState(){
     errorState = 0;
   }
 
+}
+
+void controlRedBlinking() {
   if(errorState==0) {
     digitalWrite(greenLED, HIGH);
     digitalWrite(redLED, LOW);
-  } else {
+  } else if(errorState==1) {
     digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
   }
