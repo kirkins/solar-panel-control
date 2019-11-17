@@ -34,7 +34,7 @@ double safeCaseHigh = 45.00;
 double safeWaterLow = 2.00;
 double currentTemp, targetTemp;
 
-bool errorState = false;
+int errorState = 0;
 bool inverterTimerLock = false;
 bool inverterTimerBlock = false;
 bool inverterChanging = false;
@@ -131,15 +131,17 @@ void turnOffInverter() {
   }
 
   if(analogRead(readVoltsYellow) < 204) {
+    if(!inverterFaultTimerLock) {
       inverterFaultTimerLock = true;
       timer.setCounter(0, 0, 5, timer.COUNT_DOWN, confirmInverterFault);
+    }
   } else if(inverterFaultTimerBlock) {
     inverterFaultTimerBlock = true;
   }
 }
 
 void confirmLowBatteryOrBMS() {
-  if(!digitalRead(bmsActiveSignal) || batteryState < 2 || errorState) {
+  if(!digitalRead(bmsActiveSignal) || batteryState < 2 || errorState > 0) {
     if(!inverterTimerBlock && analogRead(readVoltsGreen) > 204) {
       inverterChanging = true;
       timer.setCounter(0, 0, 2, timer.COUNT_DOWN, stopInverterChanging);
@@ -150,12 +152,12 @@ void confirmLowBatteryOrBMS() {
 }
 
 void confirmInverterFault() {
-  if(analogRead(readVoltsYellow) < 204) {
-    if(!inverterFaultTimerBlock && analogRead(readVoltsGreen) > 204) {
-      inverterChanging = true;
-      timer.setCounter(0, 0, 2, timer.COUNT_DOWN, stopInverterChanging);
-    }
+  if(analogRead(readVoltsYellow) < 204 && !inverterFaultTimerBlock) {
+    inverterChanging = true;
+    timer.setCounter(0, 0, 2, timer.COUNT_DOWN, stopInverterChanging);
   }
+  inverterFaultTimerBlock = false;
+  inverterFaultTimerLock = false;
 }
 
 void setBatteryState() {
@@ -198,6 +200,11 @@ void controlLightingLoad(){
 }
 
 void getErrorState(){
+  // Error Types:
+  // 0 - No error
+  // 1 - Battery too cold
+  // 2 - Battery or case too hot
+  // 3 - Water too low
   if(0 < batteryState < 4
       || sensors.getTempCByIndex(2) < safeBatteryLow
       || sensors.getTempCByIndex(2) > safeBatteryHigh
@@ -205,11 +212,11 @@ void getErrorState(){
       || sensors.getTempCByIndex(0) < safeWaterLow) {
     digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
-    errorState = true;
+    errorState = 1;
   } else {
     digitalWrite(greenLED, HIGH);
     digitalWrite(redLED, LOW);
-    errorState = false;
+    errorState = 0;
   }
 }
 
