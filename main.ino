@@ -126,9 +126,7 @@ void turnOffInverter() {
   // Turn off inverter if error state is greater than 2 (meaning not cold water or cold battery error)
   // Turn on inverter if inverter is off and battlevel goes from Low to Normal
   if(!digitalRead(bmsActiveSignal) || batteryState < 2 || errorState > 2) {
-    Serial.println("I ran -1");
     if(!inverterTimerLock) {
-      Serial.println("I ran -2");
       inverterTimerLock = true;
       timer.start();
       timer.setCounter(0, 0, 3, timer.COUNT_DOWN, confirmLowBatteryOrBMS);
@@ -174,10 +172,6 @@ void confirmInverterFault() {
 
 void setBatteryState() {
   double batteryVoltage = (5*(analogRead(batteryLevel)/1023.00))*1.016;
-  // Serial.print("Battery Level:    ");
-  // Serial.println(analogRead(batteryLevel));
-  Serial.print("Battery Voltage:    ");
-  Serial.println(batteryVoltage);
   if(batteryVoltage < 2.6) {
     batteryState = 0; // battErrorLOW
   } else if(batteryVoltage <2.9) {
@@ -189,8 +183,6 @@ void setBatteryState() {
   } else {
     batteryState = 4; // battErrorHIGH
   }
-  Serial.print("Battery State:    ");
-  Serial.println(batteryState);
 }
 
 void changeInverterState() {
@@ -239,9 +231,6 @@ void getErrorState(){
 void controlRedBlinking() {
   bool redOn;
   bool greenOn = true;
-
-  Serial.print("light blink loop running");
-  Serial.println();
 
   if(errorState==0) {
     redOn=false;
