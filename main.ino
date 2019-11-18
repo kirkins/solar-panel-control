@@ -310,7 +310,9 @@ void printTests(){
 void loop() {
 
   timer.run();
+  timer.start();
   redLightTimer.run();
+  redLightTimer.start();
 
   sensors.requestTemperatures();
   setBatteryState();
