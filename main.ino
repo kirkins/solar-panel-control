@@ -65,6 +65,7 @@ void setup() {
   pinMode(inverterSwitch, OUTPUT);
   pinMode(voltOut1, OUTPUT);
   pinMode(voltOut2, OUTPUT);
+  pinMode(lightingLoad, OUTPUT);
 
   analogWrite(voltOut1, 1023);
   analogWrite(voltOut2, 1023);
