@@ -226,7 +226,7 @@ void getErrorState(){
     errorState = 2;
   } else if(sensors.getTempCByIndex(2) > safeBatteryTempHigh || sensors.getTempCByIndex(1) > safeCaseTempHigh) {
     errorState = 3;
-  } else if(batteryState == 0) {
+  } else if(!batteryState) {
     errorState = 4;
   } else if(batteryState == 4) {
     errorState = 5;
