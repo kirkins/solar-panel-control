@@ -44,6 +44,7 @@ bool inverterFaultTimerLock = false;
 bool inverterFaultTimerBlock = false;
 
 bool blinkHistory[6];
+int loopRun = 0;
 
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
@@ -72,6 +73,8 @@ void setup() {
 
   redLightTimer.setInterval(controlRedBlinking, 500);
   digitalWrite(greenLED, HIGH);
+
+  redLightTimer.start();
 }
 
 void controlFan() {
@@ -80,13 +83,6 @@ void controlFan() {
   } else {
     digitalWrite(fanControl, LOW);
   }
-  // Debug messages
-  Serial.print("Water Temp Sensor: "); 
-  Serial.println(sensors.getTempCByIndex(0));
-  Serial.print("Case Temp Sensor: ");
-  Serial.println(sensors.getTempCByIndex(1));
-  Serial.print("Batt Temp Sensor: ");
-  Serial.println(sensors.getTempCByIndex(2));
 }
 
 void controlWaterHeat() {
@@ -134,6 +130,7 @@ void turnOffInverter() {
     if(!inverterTimerLock) {
       Serial.println("I ran -2");
       inverterTimerLock = true;
+      timer.start();
       timer.setCounter(0, 0, 3, timer.COUNT_DOWN, confirmLowBatteryOrBMS);
     }
   } else if(inverterTimerLock) {
@@ -310,9 +307,7 @@ void printTests(){
 void loop() {
 
   timer.run();
-  timer.start();
   redLightTimer.run();
-  redLightTimer.start();
 
   sensors.requestTemperatures();
   setBatteryState();
@@ -325,6 +320,12 @@ void loop() {
   changeInverterState();
   controlLightingLoad();
   checkButton();
-  printTests();
+
+  // Print logs only every 20 runs
+  loopRun++;
+  if(loopRun > 19) {
+    printTests();
+    loopRun = 0;
+  }
 
 }
