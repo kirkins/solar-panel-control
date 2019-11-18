@@ -71,8 +71,6 @@ void setup() {
   analogWrite(voltOut2, 1023);
 
   redLightTimer.setInterval(controlRedBlinking, 500);
-  timer.run();
-  redLightTimer.run();
   digitalWrite(greenLED, HIGH);
 }
 
@@ -310,6 +308,10 @@ void printTests(){
 }
 
 void loop() {
+
+  timer.run();
+  redLightTimer.run();
+
   sensors.requestTemperatures();
   setBatteryState();
   getErrorState();
@@ -322,4 +324,5 @@ void loop() {
   controlLightingLoad();
   checkButton();
   printTests();
+
 }
