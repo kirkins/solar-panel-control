@@ -143,7 +143,7 @@ void turnOffInverter() {
       inverterFaultTimerLock = true;
       timer.setCounter(0, 0, 5, timer.COUNT_DOWN, confirmInverterFault);
     }
-  } else if(inverterFaultTimerBlock) {
+  } else if(inverterFaultTimerLock) {
     inverterFaultTimerBlock = true;
   }
 }
