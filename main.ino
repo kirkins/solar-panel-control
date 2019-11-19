@@ -130,6 +130,7 @@ void turnOffInverter() {
       inverterTimerLock = true;
       timer.start();
       timer.setCounter(0, 0, 3, timer.COUNT_DOWN, confirmLowBatteryOrBMS);
+      Serial.println("Setting confirm battery low timer");
     }
   } else if(inverterTimerLock) {
     Serial.print("CANCELLING TURN OF INVERTER");
