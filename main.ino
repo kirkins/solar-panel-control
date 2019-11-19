@@ -257,9 +257,6 @@ void printTests(){
 
   //INPUTS//
 
-  Serial.print("Battery Voltage:    ");	
-  Serial.println(batteryVoltage);
-
   Serial.print("Battery State:    ");	
   Serial.println(batteryState);
 
