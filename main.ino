@@ -232,6 +232,8 @@ void controlRedBlinking() {
   bool redOn;
   bool greenOn = true;
 
+  Serial.print("Running LED loop");
+
   if(errorState==0) {
     redOn=false;
     greenOn=true;
@@ -240,9 +242,11 @@ void controlRedBlinking() {
   }
 
   if(redOn) {
+    Serial.print("turning on red LED");
     digitalWrite(greenLED, LOW);
     digitalWrite(redLED, HIGH);
   } else if(greenOn) {
+    Serial.print("turning on green LED");
     digitalWrite(greenLED, HIGH);
     digitalWrite(redLED, LOW);
   }
