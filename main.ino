@@ -238,6 +238,7 @@ void controlRedBlinking() {
     greenOn=true;
   } else {
     redOn=true;
+    greenOn=false;
   }
 
   if(redOn) {
