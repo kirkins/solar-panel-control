@@ -77,11 +77,6 @@ void setup() {
   redLightTimer.setInterval(controlRedBlinking, 500);
   digitalWrite(greenLED, HIGH);
 
-  redLightTimer.start();
-  batteryLowTimer.start();
-  faultTimer.start();
-  inverterChangingTimer.start();
-  stopInverterChangingTimer.start();
 }
 
 void controlFan() {
@@ -314,10 +309,25 @@ void printTests(){
 void loop() {
 
   redLightTimer.run();
+  if(!redLightTimer.isCounterCompleted()) {
+    redLightTimer.start();
+  }
   batteryLowTimer.run();
+  if(!batteryLowTimer.isCounterCompleted()) {
+    batteryLowTimer.start();
+  }
   faultTimer.run();
+  if(!faultTimer.isCounterCompleted()) {
+    faultTimer.start();
+  }
   inverterChangingTimer.run();
+  if(!inverterChangingTimer.isCounterCompleted()) {
+    inverterChangingTimer.start();
+  }
   stopInverterChangingTimer.run();
+  if(!stopInverterChangingTimer.isCounterCompleted()) {
+    stopInverterChangingTimer.start();
+  }
 
   sensors.requestTemperatures();
   setBatteryState();
