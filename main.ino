@@ -27,7 +27,6 @@ Countimer batteryLowTimer;
 Countimer redLightTimer;
 Countimer faultTimer;
 Countimer inverterChangingTimer;
-Countimer stopInverterChangingTimer;
 
 int batteryState = 3;
 float fanOnTemp       = 28.00;
@@ -78,13 +77,8 @@ void setup() {
   digitalWrite(greenLED, HIGH);
 
   batteryLowTimer.setCounter(0, 0, 3, batteryLowTimer.COUNT_DOWN, confirmLowBatteryOrBMS);
+  inverterChangingTimer.setCounter(0, 0, 2, inverterChangingTimer.COUNT_DOWN, stopInverterChanging);
 
-  batteryLowTimer.setInterval(refreshClock, 1000);
-}
-
-void refreshClock() {
-	Serial.print("Current count time is: ");
-    Serial.println(batteryLowTimer.getCurrentTime());
 }
 
 void controlFan() {
@@ -163,7 +157,6 @@ void confirmLowBatteryOrBMS() {
     if(!inverterTimerBlock && (analogRead(readVoltsGreen) < 204 || analogRead(readVoltsYellow) < 204)) {
       Serial.println("I ran 3");
       inverterChanging = true;
-      inverterChangingTimer.setCounter(0, 0, 2, inverterChangingTimer.COUNT_DOWN, stopInverterChanging);
     }
   }
   inverterTimerBlock = false;
@@ -173,7 +166,6 @@ void confirmLowBatteryOrBMS() {
 void confirmInverterFault() {
   if(analogRead(readVoltsYellow) < 204 && !inverterFaultTimerBlock) {
     inverterChanging = true;
-    stopInverterChangingTimer.setCounter(0, 0, 2, stopInverterChangingTimer.COUNT_DOWN, stopInverterChanging);
   }
   inverterFaultTimerBlock = false;
   inverterFaultTimerLock = false;
@@ -319,20 +311,19 @@ void loop() {
   if(!redLightTimer.isCounterCompleted()) {
     redLightTimer.start();
   }
-  batteryLowTimer.run();
+
   faultTimer.run();
   if(!faultTimer.isCounterCompleted()) {
     faultTimer.start();
   }
+
   inverterChangingTimer.run();
-  if(!inverterChangingTimer.isCounterCompleted()) {
+  if(inverterChanging) {
     inverterChangingTimer.start();
   }
-  stopInverterChangingTimer.run();
-  if(!stopInverterChangingTimer.isCounterCompleted()) {
-    stopInverterChangingTimer.start();
-  }
 
+
+  batteryLowTimer.run();
   if(inverterTimerLock) {
     batteryLowTimer.start();
   }
