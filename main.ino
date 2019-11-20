@@ -132,9 +132,7 @@ void turnOffInverter() {
   if(!digitalRead(bmsActiveSignal) || batteryState < 2 || errorState > 2) {
     if(!inverterTimerLock) {
       inverterTimerLock = true;
-      if(!batteryLowTimer.isCounterCompleted()) {
-        batteryLowTimer.start();
-      }
+      batteryLowTimer.start();
       Serial.println("Setting confirm battery low timer");
     }
   } else if(inverterTimerLock) {
