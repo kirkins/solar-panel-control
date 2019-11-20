@@ -77,6 +77,8 @@ void setup() {
   redLightTimer.setInterval(controlRedBlinking, 500);
   digitalWrite(greenLED, HIGH);
 
+  batteryLowTimer.setCounter(0, 0, 3, batteryLowTimer.COUNT_DOWN, confirmLowBatteryOrBMS);
+
 }
 
 void controlFan() {
@@ -130,7 +132,9 @@ void turnOffInverter() {
   if(!digitalRead(bmsActiveSignal) || batteryState < 2 || errorState > 2) {
     if(!inverterTimerLock) {
       inverterTimerLock = true;
-      batteryLowTimer.setCounter(0, 0, 3, batteryLowTimer.COUNT_DOWN, confirmLowBatteryOrBMS);
+      if(!batteryLowTimer.isCounterCompleted()) {
+        batteryLowTimer.start();
+      }
       Serial.println("Setting confirm battery low timer");
     }
   } else if(inverterTimerLock) {
@@ -313,9 +317,6 @@ void loop() {
     redLightTimer.start();
   }
   batteryLowTimer.run();
-  if(!batteryLowTimer.isCounterCompleted()) {
-    batteryLowTimer.start();
-  }
   faultTimer.run();
   if(!faultTimer.isCounterCompleted()) {
     faultTimer.start();
