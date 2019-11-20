@@ -84,7 +84,7 @@ void setup() {
 
 void refreshClock() {
 	Serial.print("Current count time is: ");
-    Serial.println(timer.getCurrentTime());
+    Serial.println(batteryLowTimer.getCurrentTime());
 }
 
 void controlFan() {
