@@ -80,11 +80,12 @@ void setup() {
   inverterChangingTimer.setCounter(0, 0, 2, inverterChangingTimer.COUNT_DOWN, stopInverterChanging);
 
   batteryLowTimer.setInterval(refreshClock, 1000);
+  inverterChangingTimer.setInterval(refreshClock, 1000);
 }
 
 void refreshClock() {
-  Serial.print("Current count time is: ");
-  Serial.println(batteryLowTimer.getCurrentTime());
+  //Serial.print("Current count time is: ");
+  //Serial.println(batteryLowTimer.getCurrentTime());
 }
 
 void controlFan() {
