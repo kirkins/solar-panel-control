@@ -79,6 +79,12 @@ void setup() {
   batteryLowTimer.setCounter(0, 0, 3, batteryLowTimer.COUNT_DOWN, confirmLowBatteryOrBMS);
   inverterChangingTimer.setCounter(0, 0, 2, inverterChangingTimer.COUNT_DOWN, stopInverterChanging);
 
+  batteryLowTimer.setInterval(refreshClock, 1000);
+}
+
+void refreshClock() {
+  Serial.print("Current count time is: ");
+  Serial.println(batteryLowTimer.getCurrentTime());
 }
 
 void controlFan() {
