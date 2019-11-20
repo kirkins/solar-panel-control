@@ -209,6 +209,7 @@ void changeInverterState() {
 }
 
 void stopInverterChanging() {
+  Serial.println("I ran 5");
   inverterChanging = false;
 }
 
@@ -347,7 +348,10 @@ void loop() {
   externalYellowLight();
   changeInverterState();
   controlLightingLoad();
-  checkButton();
+
+  if(!inverterChanging) {
+    checkButton();
+  }
 
   // Print logs only every 20 runs
   loopRun++;
