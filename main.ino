@@ -203,6 +203,8 @@ void changeInverterState() {
   if(inverterChanging) {
     Serial.println("I ran 4");
     digitalWrite(inverterSwitch, HIGH);
+  } else {
+    digitalWrite(inverterSwitch, LOW);
   }
 }
 
