@@ -160,7 +160,7 @@ void confirmLowBatteryOrBMS() {
   Serial.println("I ran 1");
   if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
     Serial.println("I ran 2");
-    if(!inverterTimerBlock && analogRead(readVoltsGreen) < 204 && analogRead(readVoltsYellow) < 204) {
+    if(!inverterTimerBlock && (analogRead(readVoltsGreen) < 204 || analogRead(readVoltsYellow) < 204)) {
       Serial.println("I ran 3");
       inverterChanging = true;
       inverterChangingTimer.setCounter(0, 0, 2, inverterChangingTimer.COUNT_DOWN, stopInverterChanging);
