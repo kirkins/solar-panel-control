@@ -161,6 +161,7 @@ void confirmLowBatteryOrBMS() {
   Serial.println("I ran 1");
   if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
     Serial.println("I ran 2");
+    delay(5000);
     if(!inverterTimerBlock && (analogRead(readVoltsGreen) < 204 || analogRead(readVoltsYellow) < 204)) {
       Serial.println("I ran 3");
       inverterChanging = true;
@@ -212,8 +213,6 @@ void changeInverterState() {
 void stopInverterChanging() {
   Serial.println("I ran 5");
   inverterChanging = false;
-  digitalWrite(lightingLoad, LOW);
-  delay(5000);
 }
 
 void controlLightingLoad(){
