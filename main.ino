@@ -212,6 +212,8 @@ void changeInverterState() {
 void stopInverterChanging() {
   Serial.println("I ran 5");
   inverterChanging = false;
+  digitalWrite(lightingLoad, LOW);
+  delay(2000);
 }
 
 void controlLightingLoad(){
