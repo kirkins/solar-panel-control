@@ -30,7 +30,7 @@ Countimer inverterChangingTimer;
 
 int batteryState = 3;
 float fanOnTemp       = 28.00;
-float waterOffTemp       = 80.00;
+float waterOffTemp       = 90.00;
 double safeBatteryTempLow = 0.00;
 double safeBatteryTempHigh = 40.00;
 double safeCaseTempHigh = 45.00;
@@ -44,6 +44,9 @@ bool inverterChanging = false;
 
 bool inverterFaultTimerLock = false;
 bool inverterFaultTimerBlock = false;
+
+bool powerOFF = false;
+bool giveDelay = false;
 
 bool blinkHistory[6];
 int loopRun = 0;
@@ -89,6 +92,11 @@ void refreshClock() {
 }
 
 void controlFan() {
+  Serial.print("Case Temp:    ");
+  Serial.println(sensors.getTempCByIndex(1));
+  Serial.print("Batt Temp:    ");
+  Serial.println(sensors.getTempCByIndex(2));
+
   if(sensors.getTempCByIndex(1) > fanOnTemp || sensors.getTempCByIndex(2) > fanOnTemp) {
     digitalWrite(fanControl,HIGH);
   } else {
@@ -107,8 +115,13 @@ void controlWaterHeat() {
 }
 
 void externalGreenLight() {
+  if(giveDelay) {
+    delay(5000);
+    giveDelay = false;
+  }
   if(analogRead(readVoltsGreen) < 204.00) {
     digitalWrite(greenDrainGround, HIGH);
+    powerOFF = false;
   } else {
     digitalWrite(greenDrainGround, LOW);
   }
@@ -117,6 +130,7 @@ void externalGreenLight() {
 void externalYellowLight() {
   if(analogRead(readVoltsYellow) < 204.00) {
     digitalWrite(yellowDrainGround, HIGH);
+    powerOFF = false;
   } else {
     digitalWrite(yellowDrainGround, LOW);
   }
@@ -136,13 +150,13 @@ void turnOffInverter() {
   // Turn off inverter if fault for 5 seconds
   // Turn off inverter if error state is greater than 2 (meaning not cold water or cold battery error)
   // Turn on inverter if inverter is off and battlevel goes from Low to Normal
-  if(!digitalRead(bmsActiveSignal) || batteryState < 2 || errorState == 3 || errorState == 4) {
+  if(batteryState < 2 || errorState == 3 || errorState == 4) {
     if(!inverterTimerLock) {
       inverterTimerLock = true;
       Serial.println("Setting confirm battery low timer");
     }
   } else if(inverterTimerLock) {
-    Serial.print("CANCELLING TURN OF INVERTER");
+    Serial.print("CANCELLING TURN OFF INVERTER");
     Serial.println();
     inverterTimerBlock = true;
   }
@@ -159,7 +173,7 @@ void turnOffInverter() {
 
 void confirmLowBatteryOrBMS() {
   Serial.println("I ran 1");
-  if(!digitalRead(bmsActiveSignal) || batteryState < 2) {
+  if(batteryState < 2) {
     Serial.println("I ran 2");
     delay(5000);
     if(!inverterTimerBlock && (analogRead(readVoltsGreen) < 204 || analogRead(readVoltsYellow) < 204)) {
@@ -181,20 +195,22 @@ void confirmInverterFault() {
 
 void setBatteryState() {
 
-  double batteryVoltage = (5*(analogRead(batteryLevel)/1023.00))*1.016;
+  double batteryVoltage = (5.000*(analogRead(batteryLevel)/1023.00))*1.3810;
 
-  if(loopRun > 19) {
-    Serial.print("Battery Voltage:    ");		
+  if(loopRun == 19) {
+    Serial.print("Battery Voltage:    ");
     Serial.println(batteryVoltage);
+    Serial.print("Battery Voltage:    ");
+    Serial.println(batteryVoltage, 4);
   }
 
   if(batteryVoltage < 2.6) {
     batteryState = 0; // battErrorLOW
-  } else if(batteryVoltage <2.9) {
+  } else if(batteryVoltage <2.8) {     //change back to 2.8
     batteryState = 1; // battLOW
-  } else if(batteryVoltage < 3.5) {
+  } else if(batteryVoltage < 3.38) {
     batteryState = 2; // battNORMAL
-  } else if(batteryVoltage < 3.65) {
+  } else if(batteryVoltage < 3.46) {
     batteryState = 3; // battHIGH
   } else {
     batteryState = 4; // battErrorHIGH
@@ -213,10 +229,12 @@ void changeInverterState() {
 void stopInverterChanging() {
   Serial.println("I ran 5");
   inverterChanging = false;
+  powerOFF = true;
+  giveDelay = true;
 }
 
 void controlLightingLoad(){
-  if(batteryState < 2) {
+  if(powerOFF){
     digitalWrite(lightingLoad, LOW);
   } else {
     digitalWrite(lightingLoad, HIGH);
@@ -278,7 +296,7 @@ void printTests(){
 
   //INPUTS//
 
-  Serial.print("Battery State:    ");	
+  Serial.print("Battery State:    ");
   Serial.println(batteryState);
 
   //readVoltsGreen  //  A0
@@ -301,8 +319,8 @@ void printTests(){
 
   //bmsActiveSignal //  3
   //true when BMS is OK
-  Serial.print("bmsActiveSignal:  ");
-  Serial.println(digitalRead(bmsActiveSignal));
+  //Serial.print("bmsActiveSignal:  ");
+  //Serial.println(digitalRead(bmsActiveSignal));
 
   // Error State
   Serial.print("Error State:  ");
@@ -361,5 +379,4 @@ void loop() {
     printTests();
     loopRun = 0;
   }
-
 }
