@@ -241,7 +241,7 @@ void setBatteryState() {
     Serial.println(averageBatteryVoltage, 4);
 
     for(int i = 0; i < voltageHistorySize; i++) {
-      Serial.println(voltageHistory[i]);
+      Serial.println(voltageHistory[i], 4);
     }
   }
 
