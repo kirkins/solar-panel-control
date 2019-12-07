@@ -176,7 +176,7 @@ void turnOffInverter() {
   // Turn off inverter if fault for 5 seconds
   // Turn off inverter if error state is greater than 2 (meaning not cold water or cold battery error)
   // Turn on inverter if inverter is off and battlevel goes from Low to Normal
-  if(/*!digitalRead(bmsActiveSignal) || */batteryState < 2 || errorState == 3 || errorState == 4) {
+  if(batteryState < 2 || errorState == 3 || errorState == 4) {
     if(!inverterTimerLock) {
       inverterTimerLock = true;
       Serial.println("Setting confirm battery low timer");
@@ -199,7 +199,7 @@ void turnOffInverter() {
 
 void confirmLowBatteryOrBMS() {
   Serial.println("I ran 1");
-  if(/*!digitalRead(bmsActiveSignal) ||*/ batteryState < 2) {
+  if(batteryState < 2) {
     Serial.println("I ran 2");
     delay(5000);
     if(!inverterTimerBlock && (analogRead(readVoltsGreen) < 204 || analogRead(readVoltsYellow) < 204)) {
