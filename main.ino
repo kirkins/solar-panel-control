@@ -54,13 +54,13 @@ double voltageHistory[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 double loadOutput;
 double batteryVoltage = 3.2;
 
-double batteryCase2Limit = 3.38;
-double targetVoltage = batteryCase2Limit + 0.05;
+double batteryCase2Limit = 3.26;  
+double targetVoltage = batteryCase2Limit + 0.15;
 
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
-PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 5, 2000, 2, REVERSE);
+PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 10, 2000, 1, REVERSE);
 
 // 0 = water
 // 1 = case
@@ -142,7 +142,7 @@ void controlWaterHeat() {
     digitalWrite(blueLED, LOW);
   } else {
     analogWrite(voltLoadDump, loadOutput);
-    analogWrite(blueLED, 50);
+    analogWrite(blueLED, 30);
   }
 }
 
@@ -241,18 +241,18 @@ void setBatteryState() {
     Serial.println(averageBatteryVoltage, 4);
 
     for(int i = 0; i < voltageHistorySize; i++) {
-      Serial.println(voltageHistory[i], 4);
+      Serial.println(voltageHistory[i]);
     }
   }
 
 
-  if(averageBatteryVoltage < 2.5) {
+  if(averageBatteryVoltage < 1.5) {
     batteryState = 0; // battErrorLOW
-  } else if(averageBatteryVoltage <2.9) {
+  } else if(averageBatteryVoltage <2.75) {
     batteryState = 1; // battLOW
   } else if(averageBatteryVoltage < batteryCase2Limit) {
     batteryState = 2; // battNORMAL
-  } else if(averageBatteryVoltage < 3.7) {
+  } else if(averageBatteryVoltage < 4.5) {
     batteryState = 3; // battHIGH
   } else {
     batteryState = 4; // battErrorHIGH
@@ -275,9 +275,9 @@ void stopInverterChanging() {
 
 void controlLightingLoad(){
 
-  if(averageBatteryVoltage < 2.65){
+  if(averageBatteryVoltage < 2.6){
     digitalWrite(lightingLoad, LOW);
-  }else if(averageBatteryVoltage > 3.05){
+  }else if(averageBatteryVoltage > 3.00){
     digitalWrite(lightingLoad, HIGH);
   }else if(firstTimeOn){
   digitalWrite(lightingLoad,HIGH);
