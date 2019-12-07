@@ -55,12 +55,12 @@ int loopRun = 0;
 double batteryVoltage, loadOutput;
 
 double batteryCase2Limit = 3.38;
-double targetLoadOutput = floor((5/(batteryCase2Limit + 0.02))*255);
+double targetVoltage = batteryCase2Limit + 0.02;
 
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
-PID loadOutputPID(&batteryVoltage, &loadOutput, &targetLoadOutput, 0.5, 7, 1, DIRECT);
+PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 0.5, 7, 1, DIRECT);
 
 // 0 = water
 // 1 = case
