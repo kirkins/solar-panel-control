@@ -49,7 +49,6 @@ bool inverterFaultTimerBlock = false;
 
 bool firstTimeOn = true;
 
-bool blinkHistory[6];
 int loopRun = 0;
 
 double batteryVoltage, loadOutput;
@@ -299,10 +298,6 @@ void controlRedBlinking() {
     digitalWrite(redLED, LOW);
   }
 
-  for (int i = 0; i < 5; i++){
-    blinkHistory[i+1]=blinkHistory[i];
-  }
-  blinkHistory[0] = redOn;
 }
 
 void printTests(){
@@ -338,11 +333,6 @@ void printTests(){
   // Error State
   Serial.print("Error State:  ");
   Serial.println(errorState);
-
-  // Blink History
-  Serial.print("Blink History:  ");
-  for (int i = 0; i < 6; i++) Serial.print(blinkHistory[i], HEX);
-  Serial.println();
 
   //tempSensors //  2
   //tempSensors prints in controlFan function//
