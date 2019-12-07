@@ -235,10 +235,10 @@ void setBatteryState() {
   averageBatteryVoltage = average(voltageHistory, voltageHistorySize);
 
   if(loopRun == 19) {
-    Serial.print("Battery Voltage:    ");
-    Serial.println(batteryVoltage);
-    Serial.print("Battery Voltage:    ");
-    Serial.println(batteryVoltage, 4);
+    Serial.print("Average Battery Voltage:    ");
+    Serial.println(averageBatteryVoltage);
+    Serial.print("Average Battery Voltage:    ");
+    Serial.println(averageBatteryVoltage, 4);
   }
 
   if(averageBatteryVoltage < 2.5) {
