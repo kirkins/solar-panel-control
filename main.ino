@@ -49,7 +49,8 @@ bool inverterFaultTimerBlock = false;
 bool firstTimeOn = true;
 
 int loopRun = 0;
-int voltageHistory[10];
+int voltageHistorySize;
+int voltageHistory[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 double loadOutput;
 double batteryVoltage = 3.2;
 
@@ -69,9 +70,8 @@ void setup() {
   // Set PWM frequency for pin 10 to 30hz
   TCCR1B = TCCR1B & B11111000 | B00000101;
 
-  for(int i = 0; i < sizeof(voltageHistory)-1; i++) {
-    voltageHistory[i] = -1;
-  }
+  // get size of history array
+  voltageHistorySize = sizeof(voltageHistory) / sizeof(voltageHistory[0]);
 
   loadOutputPID.SetMode(AUTOMATIC);
   Serial.begin(9600);
@@ -226,13 +226,13 @@ void setBatteryState() {
   batteryVoltage = (5.000*(analogRead(batteryLevel)/1023.00))*1.3810;
 
   // Battery history
-  for (int i = 0; i < (sizeof(voltageHistory)-1); i++){
+  for (int i = 0; i < voltageHistorySize; i++){
     voltageHistory[i+1]=voltageHistory[i];
   }
   voltageHistory[0] = batteryVoltage;
 
   // Get average battery voltage
-  averageBatteryVoltage = average(voltageHistory, sizeof(voltageHistory));
+  averageBatteryVoltage = average(voltageHistory, voltageHistorySize);
 
   if(loopRun == 19) {
     Serial.print("Battery Voltage:    ");
