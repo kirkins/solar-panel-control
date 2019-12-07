@@ -52,7 +52,7 @@ bool firstTimeOn = true;
 bool blinkHistory[6];
 int loopRun = 0;
 
-double batteryVoltage, loadOutput, targetLoadOutput;
+double batteryVoltage, loadOutput;
 
 double batteryCase2Limit = 3.38;
 double targetLoadOutput = floor((5/(batteryCase2Limit + 0.02))*255);
