@@ -1,6 +1,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Countimer.h>
+#include <PID_v1.h>
 
 //INPUTS
 #define readVoltsGreen A0 // if above 1V true (read as 204)
@@ -51,8 +52,15 @@ bool firstTimeOn = true;
 bool blinkHistory[6];
 int loopRun = 0;
 
+double batteryVoltage, loadOutput, targetLoadOutput;
+
+double batteryCase2Limit = 3.38;
+double targetLoadOutput = floor((5/(batteryCase2Limit + 0.02))*255);
+
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
+
+PID loadOutputPID(&batteryVoltage, &loadOutput, &targetLoadOutput, 0.5, 7, 1, DIRECT);
 
 // 0 = water
 // 1 = case
@@ -62,6 +70,7 @@ void setup() {
   // Set PWM frequency for pin 10 to 30hz
   TCCR1B = TCCR1B & B11111000 | B00000101;
 
+  loadOutputPID.SetMode(AUTOMATIC);
   Serial.begin(9600);
   sensors.begin();
   pinMode(fanControl, OUTPUT);
@@ -110,11 +119,13 @@ void controlFan() {
 }
 
 void controlWaterHeat() {
+  loadOutputPID.SetOutputLimits(0, 255);
+  loadOutputPID.Compute();
   if(sensors.getTempCByIndex(0) > waterOffTemp || batteryState < 3) {
     digitalWrite(voltLoadDump,LOW);
     digitalWrite(blueLED, LOW);
   } else {
-    digitalWrite(voltLoadDump, HIGH);
+    analogWrite(voltLoadDump, loadOutput);
     analogWrite(blueLED, 50);
   }
 }
@@ -196,7 +207,7 @@ void setBatteryState() {
 
   analogRead(batteryLevel);
   delayMicroseconds(100);
-  double batteryVoltage = (5.000*(analogRead(batteryLevel)/1023.00))*1.3810;
+  batteryVoltage = (5.000*(analogRead(batteryLevel)/1023.00))*1.3810;
   lastBattVoltage = batteryVoltage;
 
   if(loopRun == 19) {
@@ -210,7 +221,7 @@ void setBatteryState() {
     batteryState = 0; // battErrorLOW
   } else if(batteryVoltage <2.9) {
     batteryState = 1; // battLOW
-  } else if(batteryVoltage < 3.38) {
+  } else if(batteryVoltage < batteryCase2Limit) {
     batteryState = 2; // battNORMAL
   } else if(batteryVoltage < 3.7) {
     batteryState = 3; // battHIGH
