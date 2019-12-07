@@ -36,8 +36,7 @@ double safeBatteryTempLow = 0.00;
 double safeBatteryTempHigh = 40.00;
 double safeCaseTempHigh = 45.00;
 double safeWaterTempLow = 2.00;
-double currentTemp, targetTemp;
-double lastBattVoltage = 3.2;
+double currentTemp, targetTemp, averageBatteryVoltage;
 
 int errorState = 0;
 bool inverterTimerLock = false;
@@ -50,11 +49,12 @@ bool inverterFaultTimerBlock = false;
 bool firstTimeOn = true;
 
 int loopRun = 0;
-
-double batteryVoltage, loadOutput;
+int voltageHistory[10];
+double loadOutput;
+double batteryVoltage = 3.2;
 
 double batteryCase2Limit = 3.38;
-double targetVoltage = batteryCase2Limit + 0.02;
+double targetVoltage = batteryCase2Limit + 0.05;
 
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
@@ -68,6 +68,10 @@ PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 0.2, 5, 0, REVER
 void setup() {
   // Set PWM frequency for pin 10 to 30hz
   TCCR1B = TCCR1B & B11111000 | B00000101;
+
+  for(uint8_t i = 0; i < sizeof(voltageHistory); ++i) {
+    voltageHistory[i] = -1;
+  }
 
   loadOutputPID.SetMode(AUTOMATIC);
   Serial.begin(9600);
@@ -95,6 +99,19 @@ void setup() {
 
   batteryLowTimer.setInterval(refreshClock, 1000);
   inverterChangingTimer.setInterval(refreshClock, 1000);
+}
+
+float average (int * array, int len) {
+  int sum = 0;
+  int total = len;
+  for (int i = 0 ; i < len ; i++) {
+    if(array[i] != -1) {
+      sum += array [i] ;
+    } else {
+      total--;
+    }
+  }
+  return  ((float) sum) / total;
 }
 
 void refreshClock() {
@@ -207,7 +224,15 @@ void setBatteryState() {
   analogRead(batteryLevel);
   delayMicroseconds(100);
   batteryVoltage = (5.000*(analogRead(batteryLevel)/1023.00))*1.3810;
-  lastBattVoltage = batteryVoltage;
+
+  // Battery history
+  for (int i = 0; i < (sizeof(voltageHistory)-1); i++){
+    voltageHistory[i+1]=voltageHistory[i];
+  }
+  voltageHistory[0] = batteryVoltage;
+
+  // Get average battery voltage
+  averageBatteryVoltage = average(voltageHistory, sizeof(voltageHistory));
 
   if(loopRun == 19) {
     Serial.print("Battery Voltage:    ");
@@ -216,13 +241,13 @@ void setBatteryState() {
     Serial.println(batteryVoltage, 4);
   }
 
-  if(batteryVoltage < 2.5) {
+  if(averageBatteryVoltage < 2.5) {
     batteryState = 0; // battErrorLOW
-  } else if(batteryVoltage <2.9) {
+  } else if(averageBatteryVoltage <2.9) {
     batteryState = 1; // battLOW
-  } else if(batteryVoltage < batteryCase2Limit) {
+  } else if(averageBatteryVoltage < batteryCase2Limit) {
     batteryState = 2; // battNORMAL
-  } else if(batteryVoltage < 3.7) {
+  } else if(averageBatteryVoltage < 3.7) {
     batteryState = 3; // battHIGH
   } else {
     batteryState = 4; // battErrorHIGH
@@ -245,9 +270,9 @@ void stopInverterChanging() {
 
 void controlLightingLoad(){
 
-  if(lastBattVoltage < 2.65){
+  if(averageBatteryVoltage < 2.65){
     digitalWrite(lightingLoad, LOW);
-  }else if(lastBattVoltage > 3.05){
+  }else if(averageBatteryVoltage > 3.05){
     digitalWrite(lightingLoad, HIGH);
   }else if(firstTimeOn){
   digitalWrite(lightingLoad,HIGH);
