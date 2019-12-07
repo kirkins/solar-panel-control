@@ -69,7 +69,7 @@ void setup() {
   // Set PWM frequency for pin 10 to 30hz
   TCCR1B = TCCR1B & B11111000 | B00000101;
 
-  for(uint8_t i = 0; i < sizeof(voltageHistory); ++i) {
+  for(int i = 0; i < sizeof(voltageHistory)-1; i++) {
     voltageHistory[i] = -1;
   }
 
