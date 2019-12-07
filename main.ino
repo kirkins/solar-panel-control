@@ -239,7 +239,12 @@ void setBatteryState() {
     Serial.println(averageBatteryVoltage);
     Serial.print("Average Battery Voltage:    ");
     Serial.println(averageBatteryVoltage, 4);
+
+    for(int i = 0; i < voltageHistorySize; i++) {
+      Serial.println(voltageHistory[i]);
+    }
   }
+
 
   if(averageBatteryVoltage < 2.5) {
     batteryState = 0; // battErrorLOW
