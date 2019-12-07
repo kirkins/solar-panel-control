@@ -101,8 +101,8 @@ void setup() {
   inverterChangingTimer.setInterval(refreshClock, 1000);
 }
 
-float average (int * array, int len) {
-  int sum = 0;
+float average (double * array, int len) {
+  double sum = 0;
   int total = len;
   for (int i = 0 ; i < len ; i++) {
     if(array[i] != -1) {
