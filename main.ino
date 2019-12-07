@@ -50,7 +50,7 @@ bool firstTimeOn = true;
 
 int loopRun = 0;
 int voltageHistorySize;
-int voltageHistory[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+double voltageHistory[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 double loadOutput;
 double batteryVoltage = 3.2;
 
