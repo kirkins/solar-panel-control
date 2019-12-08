@@ -60,7 +60,7 @@ double targetVoltage = batteryCase2Limit + 0.15;
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
-PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 10, 2000, 1, REVERSE);
+PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 4, 1000, 1, REVERSE);
 
 // 0 = water
 // 1 = case
