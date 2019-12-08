@@ -226,8 +226,8 @@ void setBatteryState() {
   batteryVoltage = (5.000*(analogRead(batteryLevel)/1023.00))*1.3810;
 
   // Battery history
-  for (int i = 0; i < voltageHistorySize; i++){
-    voltageHistory[i+1]=voltageHistory[i];
+  for (int i = voltageHistorySize; i > 0; i--){
+    voltageHistory[i]=voltageHistory[i-1];
   }
   voltageHistory[0] = batteryVoltage;
 
