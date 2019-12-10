@@ -306,7 +306,7 @@ void getErrorState(){
   // 4 - Battery low error
   // 5 - Battery high error
 
-  if(averageBatteryTemp < safeBatteryTempLow && caseTemp > -50) {
+  if(averageBatteryTemp < safeBatteryTempLow) {
     errorState = 1;
   } else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
     errorState = 2;
