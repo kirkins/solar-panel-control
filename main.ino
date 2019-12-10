@@ -33,7 +33,7 @@ Countimer inverterChangingTimer;
 int batteryState = 3;
 float fanOnTemp       = 28.00;
 float waterOffTemp       = 90.00;
-double safeBatteryTempLow = 0.00;
+double safeBatteryTempLow = -2.00;
 double safeBatteryTempHigh = 40.00;
 double safeCaseTempHigh = 45.00;
 double safeWaterTempLow = 2.00;
