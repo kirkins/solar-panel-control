@@ -362,6 +362,10 @@ void controlBatteryTemp() {
 
   }
 
+  Serial.print("Battery Temp PID Output:    ");
+  Serial.println(batteryTempOutput);
+
+
   if(batteryState > 1) {
     batteryTempPID.SetOutputLimits(0, 255);
     batteryTempPID.Compute();
