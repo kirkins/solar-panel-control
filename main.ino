@@ -65,7 +65,7 @@ double batteryTemp, batteryTempOutput;
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
-PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 10, 2000, 1, REVERSE);
+PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 4, 1000, 1, REVERSE);
 PID batteryTempPID(&batteryTemp, &batteryTempOutput, &targetBatteryTemp, 10, 2000, 1, REVERSE);
 
 // 0 = water
@@ -234,8 +234,8 @@ void setBatteryState() {
   batteryVoltage = (5.000*(analogRead(batteryLevel)/1023.00))*1.3810;
 
   // Battery history
-  for (int i = 0; i < voltageHistorySize; i++){
-    voltageHistory[i+1]=voltageHistory[i];
+  for (int i = voltageHistorySize; i > 0; i--){
+    voltageHistory[i]=voltageHistory[i-1];
   }
   voltageHistory[0] = batteryVoltage;
 
