@@ -70,7 +70,7 @@ OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
 PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 4, 1000, 1, REVERSE);
-PID batteryTempPID(&averageBatteryTemp, &batteryTempOutput, &targetBatteryTemp, 0.2, 1, 0, DIRECT);
+PID batteryTempPID(&averageBatteryTemp, &batteryTempOutput, &targetBatteryTemp, 0.2, 1, 0.2, DIRECT);
 
 // 0 = water
 // 1 = case
@@ -306,13 +306,11 @@ void getErrorState(){
   // 4 - Battery low error
   // 5 - Battery high error
 
-  double caseTemp = averageBatteryTemp;
-
-  if(caseTemp < safeBatteryTempLow && caseTemp > -50) {
+  if(averageBatteryTemp < safeBatteryTempLow && caseTemp > -50) {
     errorState = 1;
   } else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
     errorState = 2;
-  } else if(caseTemp > safeBatteryTempHigh || sensors.getTempCByIndex(1) > safeCaseTempHigh) {
+  } else if(averageBatteryTemp > safeBatteryTempHigh || sensors.getTempCByIndex(1) > safeCaseTempHigh) {
     errorState = 3;
   } else if(!batteryState) {
     errorState = 4;
