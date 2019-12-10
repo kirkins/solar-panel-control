@@ -66,7 +66,7 @@ OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
 PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 4, 1000, 1, REVERSE);
-PID batteryTempPID(&batteryTemp, &batteryTempOutput, &targetBatteryTemp, 0, 2, 0, REVERSE);
+PID batteryTempPID(&batteryTemp, &batteryTempOutput, &targetBatteryTemp, 0, 1, 0, DIRECT);
 
 // 0 = water
 // 1 = case
@@ -84,6 +84,7 @@ void setup() {
   Serial.begin(9600);
   sensors.begin();
   pinMode(fanControl, OUTPUT);
+  pinMode(bmsActiveSignal, OUTPUT);
   pinMode(voltLoadDump, OUTPUT);
   pinMode(batteryHeater, OUTPUT);
   pinMode(greenDrainGround, OUTPUT);
