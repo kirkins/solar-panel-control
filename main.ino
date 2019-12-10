@@ -355,6 +355,8 @@ void controlBatteryTemp() {
       batteryTempHistory[i]=batteryTempHistory[i-1];
     }
 
+    batteryTempHistory[0] = tempBatteryTemp;
+
     // Get average Battery Temp
     averageBatteryTemp = average(batteryTempHistory, batteryTempHistorySize);
 
