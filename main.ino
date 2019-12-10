@@ -37,7 +37,7 @@ double safeBatteryTempLow = -2.00;
 double safeBatteryTempHigh = 40.00;
 double safeCaseTempHigh = 45.00;
 double safeWaterTempLow = 2.00;
-double currentTemp, targetTemp, averageBatteryVoltage;
+double currentTemp, targetTemp, averageBatteryVoltage, averageBatteryTemp;
 
 int errorState = 0;
 bool inverterTimerLock = false;
@@ -52,6 +52,8 @@ bool firstTimeOn = true;
 int loopRun = 0;
 int voltageHistorySize;
 double voltageHistory[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+int batteryTempHistorySize;
+double batteryTempHistory[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 double loadOutput;
 double batteryVoltage = 3.2;
 
@@ -78,6 +80,7 @@ void setup() {
 
   // get size of history array
   voltageHistorySize = sizeof(voltageHistory) / sizeof(voltageHistory[0]);
+  batteryTempHistorySize = sizeof(batteryTempHistory) / sizeof(batteryTempHistory[0]);
 
   loadOutputPID.SetMode(AUTOMATIC);
   batteryTempPID.SetMode(AUTOMATIC);
@@ -342,7 +345,22 @@ void controlRedBlinking() {
 }
 
 void controlBatteryTemp() {
-  batteryTemp = sensors.getTempCByIndex(2);
+
+  double tempBatteryTemp = sensors.getTempCByIndex(2);
+
+  if(tempBatteryTemp > -50) {
+
+    // Battery Temp history
+    for (int i = batteryTempHistorySize; i > 0; i--){
+      batteryTempHistory[i]=batteryTempHistory[i-1];
+    }
+    batteryTemp = sensors.getTempCByIndex(2);
+
+    // Get average Battery Temp
+    averageBatteryTemp = average(batteryTempHistory, batteryTempHistorySize);
+
+  }
+
   if(batteryState > 1) {
     batteryTempPID.SetOutputLimits(0, 255);
     batteryTempPID.Compute();
