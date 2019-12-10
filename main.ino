@@ -37,7 +37,9 @@ double safeBatteryTempLow = -2.00;
 double safeBatteryTempHigh = 40.00;
 double safeCaseTempHigh = 45.00;
 double safeWaterTempLow = 2.00;
-double currentTemp, targetTemp, averageBatteryVoltage, averageBatteryTemp;
+double currentTemp, targetTemp, averageBatteryVoltage;
+
+double averageBatteryTemp = 10.0;
 
 int errorState = 0;
 bool inverterTimerLock = false;
@@ -61,14 +63,14 @@ double batteryCase2Limit = 3.26;
 double targetVoltage = batteryCase2Limit + 0.15;
 
 double targetBatteryTemp = 1.0;
-double batteryTemp, batteryTempOutput;
+double batteryTempOutput;
 
 
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
 PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 4, 1000, 1, REVERSE);
-PID batteryTempPID(&batteryTemp, &batteryTempOutput, &targetBatteryTemp, 0, 1, 0, DIRECT);
+PID batteryTempPID(&averageBatteryTemp, &batteryTempOutput, &targetBatteryTemp, 0, 1, 0, DIRECT);
 
 // 0 = water
 // 1 = case
@@ -136,10 +138,10 @@ void controlFan() {
   Serial.println(sensors.getTempCByIndex(0));
   Serial.print("Case Temp:    ");
   Serial.println(sensors.getTempCByIndex(1));
-  Serial.print("Batt Temp:    ");
-  Serial.println(sensors.getTempCByIndex(2));
+  Serial.print("Average Batt Temp:    ");
+  Serial.println(averageBatteryTemp);
 
-  if(sensors.getTempCByIndex(1) > fanOnTemp || sensors.getTempCByIndex(2) > fanOnTemp) {
+  if(sensors.getTempCByIndex(1) > fanOnTemp || averageBatteryTemp > fanOnTemp) {
     digitalWrite(fanControl,HIGH);
   } else {
     digitalWrite(fanControl, LOW);
@@ -304,7 +306,7 @@ void getErrorState(){
   // 4 - Battery low error
   // 5 - Battery high error
 
-  double caseTemp = sensors.getTempCByIndex(2);
+  double caseTemp = averageBatteryTemp;
 
   if(caseTemp < safeBatteryTempLow && caseTemp > -50) {
     errorState = 1;
@@ -354,7 +356,6 @@ void controlBatteryTemp() {
     for (int i = batteryTempHistorySize; i > 0; i--){
       batteryTempHistory[i]=batteryTempHistory[i-1];
     }
-    batteryTemp = sensors.getTempCByIndex(2);
 
     // Get average Battery Temp
     averageBatteryTemp = average(batteryTempHistory, batteryTempHistorySize);
