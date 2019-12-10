@@ -8,7 +8,8 @@
 #define readVoltsYellow A1 // if above 1V true (read as 204)
 #define batteryLevel A2 // check voltage directly from battery
 #define inverterButton A5 // if above 1v being pushed
-#define bmsActiveSignal 3  // will read TRUE when BMS active
+#define bmsActiveSignal 8  // will read TRUE when BMS active
+#define batteryHeater 3  // will read TRUE when BMS active
 #define tempSensors 2 // serial digital inputs
 
 //OUTPUTS
@@ -57,10 +58,15 @@ double batteryVoltage = 3.2;
 double batteryCase2Limit = 3.26;  
 double targetVoltage = batteryCase2Limit + 0.15;
 
+double targetBatteryTemp = 1.0;
+double batteryTemp, batteryTempOutput;
+
+
 OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
 PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 10, 2000, 1, REVERSE);
+PID batteryTempPID(&batteryTemp, &batteryTempOutput, &targetBatteryTemp, 10, 2000, 1, REVERSE);
 
 // 0 = water
 // 1 = case
@@ -74,10 +80,12 @@ void setup() {
   voltageHistorySize = sizeof(voltageHistory) / sizeof(voltageHistory[0]);
 
   loadOutputPID.SetMode(AUTOMATIC);
+  batteryTempPID.SetMode(AUTOMATIC);
   Serial.begin(9600);
   sensors.begin();
   pinMode(fanControl, OUTPUT);
   pinMode(voltLoadDump, OUTPUT);
+  pinMode(batteryHeater, OUTPUT);
   pinMode(greenDrainGround, OUTPUT);
   pinMode(yellowDrainGround, OUTPUT);
   pinMode(greenLED, OUTPUT);
@@ -280,7 +288,7 @@ void controlLightingLoad(){
   }else if(averageBatteryVoltage > 3.00){
     digitalWrite(lightingLoad, HIGH);
   }else if(firstTimeOn){
-  digitalWrite(lightingLoad,HIGH);
+    digitalWrite(lightingLoad,HIGH);
   }
 }
 void getErrorState(){
@@ -292,7 +300,7 @@ void getErrorState(){
   // 4 - Battery low error
   // 5 - Battery high error
 
-  if(sensors.getTempCByIndex(2) < safeBatteryTempLow) {
+  if(sensors.getTempCByIndex(2) < safeBatteryTempLow && sensors.getTempCByIndex(2) > -50) {
     errorState = 1;
   } else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
     errorState = 2;
@@ -328,6 +336,17 @@ void controlRedBlinking() {
     digitalWrite(redLED, LOW);
   }
 
+}
+
+void controlBatteryTemp() {
+  batteryTemp = sensors.getTempCByIndex(2);
+  if(batteryState > 1) {
+    batteryTempPID.SetOutputLimits(0, 255);
+    batteryTempPID.Compute();
+    analogWrite(batteryHeater, batteryTempOutput);
+  } else {
+    analogWrite(batteryHeater, LOW);
+  }
 }
 
 void printTests(){
