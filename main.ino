@@ -355,6 +355,8 @@ void controlBatteryTemp() {
 
     // Battery Temp history
     for (int i = batteryTempHistorySize; i > 0; i--){
+      Serial.print("moving item: ");
+      Serial.println(i);
       batteryTempHistory[i]=batteryTempHistory[i-1];
     }
 
