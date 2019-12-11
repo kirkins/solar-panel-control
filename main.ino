@@ -442,6 +442,7 @@ void loop() {
   sensors.requestTemperatures();
   setBatteryState();
   getErrorState();
+  controlBatteryTemp();
   turnOffInverter(); // only if needed
   controlFan();
   controlWaterHeat();
