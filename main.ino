@@ -125,6 +125,10 @@ float average (double * array, int len) {
       total--;
     }
   }
+  Serial.print("Sum ");
+  Serial.println(sum);
+  Serial.print("Total ");
+  Serial.println(total);
   return  ((float) sum) / ((float) total);
 }
 
@@ -355,8 +359,6 @@ void controlBatteryTemp() {
 
     // Battery Temp history
     for (int i = batteryTempHistorySize; i > 0; i--){
-      Serial.print("moving item: ");
-      Serial.println(i);
       batteryTempHistory[i]=batteryTempHistory[i-1];
     }
 
@@ -451,7 +453,7 @@ void loop() {
   setBatteryState();
   getErrorState();
   controlBatteryTemp();
-  turnOffInverter(); // only if needed
+  //turnOffInverter(); // only if needed
   controlFan();
   controlWaterHeat();
   externalGreenLight();
