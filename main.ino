@@ -360,6 +360,12 @@ void controlBatteryTemp() {
 
     batteryTempHistory[0] = tempBatteryTemp;
 
+    Serial.print("Battery Temp History Values:    ");
+    for(int i = 0; i < batteryTempHistorySize; i++)
+    {
+      Serial.println(batteryTempHistory[i]);
+    }
+
     // Get average Battery Temp
     averageBatteryTemp = average(batteryTempHistory, batteryTempHistorySize);
 
