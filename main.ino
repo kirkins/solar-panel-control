@@ -367,7 +367,7 @@ void controlBatteryTemp() {
 
 
   if(batteryState > 1) {
-    batteryTempPID.SetOutputLimits(0, 255);
+    batteryTempPID.SetOutputLimits(0, 150);
     batteryTempPID.Compute();
     analogWrite(batteryHeater, batteryTempOutput);
   } else {
