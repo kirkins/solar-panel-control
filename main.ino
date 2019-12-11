@@ -348,6 +348,9 @@ void controlBatteryTemp() {
 
   double tempBatteryTemp = sensors.getTempCByIndex(2);
 
+  Serial.print("Battery Temp Sensor RAW:    ");
+  Serial.println(tempBatteryTemp);
+
   if(tempBatteryTemp > -50) {
 
     // Battery Temp history
