@@ -70,7 +70,7 @@ OneWire oneWire(tempSensors);
 DallasTemperature sensors(&oneWire);
 
 PID loadOutputPID(&batteryVoltage, &loadOutput, &targetVoltage, 4, 1000, 1, REVERSE);
-PID batteryTempPID(&averageBatteryTemp, &batteryTempOutput, &targetBatteryTemp, 0.2, 1, 0.2, DIRECT);
+PID batteryTempPID(&averageBatteryTemp, &batteryTempOutput, &targetBatteryTemp, 2, 5, 2, REVERSE);
 
 // 0 = water
 // 1 = case
