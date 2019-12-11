@@ -62,7 +62,7 @@ double batteryVoltage = 3.2;
 double batteryCase2Limit = 3.26;  
 double targetVoltage = batteryCase2Limit + 0.15;
 
-double targetBatteryTemp = 1.0;
+double targetBatteryTemp = 4.0;
 double batteryTempOutput;
 
 
