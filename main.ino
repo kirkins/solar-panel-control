@@ -308,11 +308,11 @@ void getErrorState(){
 
   if(averageBatteryTemp < safeBatteryTempLow) {
     errorState = 1;
-  } else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
+  } /*else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
     errorState = 2;
   } else if(averageBatteryTemp > safeBatteryTempHigh || sensors.getTempCByIndex(1) > safeCaseTempHigh) {
     errorState = 3;
-  } else if(!batteryState) {
+  } */else if(!batteryState) {
     errorState = 4;
   } else if(batteryState == 4) {
     errorState = 5;
