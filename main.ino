@@ -37,7 +37,8 @@ double safeBatteryTempLow = -2.00;
 double safeBatteryTempHigh = 40.00;
 double safeCaseTempHigh = 45.00;
 double safeWaterTempLow = 2.00;
-double currentTemp, targetTemp, averageBatteryVoltage;
+double averageBatteryVoltage = 3.00;
+double currentTemp, targetTemp;
 
 double averageBatteryTemp = 10.0;
 
@@ -119,6 +120,7 @@ float average (double * array, int len) {
   double sum = 0;
   int total = len;
   for (int i = 0 ; i < len ; i++) {
+    // TODO swap out for null
     if(array[i] != -1) {
       sum += array [i] ;
     } else {
@@ -310,6 +312,7 @@ void getErrorState(){
   // 4 - Battery low error
   // 5 - Battery high error
 
+  // TODO add averaging to other sensors so we can enable these
   if(averageBatteryTemp < safeBatteryTempLow) {
     errorState = 1;
   } /*else if(sensors.getTempCByIndex(0) < safeWaterTempLow) {
